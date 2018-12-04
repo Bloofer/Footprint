@@ -1,0 +1,54 @@
+{
+  "callgraph": { "nodes": [ "_G_", "main" ], "edges": [ [ "_G_", "main" ] ] },
+  "cfgs": {
+    "main": {
+      "nodes": {
+        "16": [ "skip", false, false ],
+        "15": [ "skip", false, false ],
+        "14": [ "skip", false, false ],
+        "13": [
+          "call(@strncpy((char */* __restrict  */)StartOf(name), (char const   */* __restrict  */)StartOf(*p.d_name), (size_t )20))",
+          false, true
+        ],
+        "12": [ "set(p,(struct dirent *)ptr)", false, false ],
+        "11": [ "set(ptr,(void *)tmp)", false, false ],
+        "10": [ "tmp:= call(@readdir, (dir_info))", false, true ],
+        "9": [ "dir_info:= call(@opendir, (\\\".\\\"))", false, true ],
+        "8": [ "set(name,(char *)__cil_tmp6)", false, false ],
+        "7": [ "alloc(__cil_tmp6,[SizeOf(char )*100])", false, false ],
+        "6": [ "return 0", false, false ],
+        "EXIT": [ "skip", false, false ],
+        "ENTRY": [ "skip", false, false ]
+      },
+      "edges": [
+        [ "16", "10" ],
+        [ "15", "11" ],
+        [ "14", "6" ],
+        [ "13", "14" ],
+        [ "12", "13" ],
+        [ "11", "12" ],
+        [ "10", "15" ],
+        [ "9", "16" ],
+        [ "8", "9" ],
+        [ "7", "8" ],
+        [ "6", "EXIT" ],
+        [ "ENTRY", "7" ]
+      ]
+    },
+    "_G_": {
+      "nodes": {
+        "19": [ "skip", false, false ],
+        "18": [ "call(@main())", false, true ],
+        "17": [ "falloc(@main, main)", false, false ],
+        "EXIT": [ "skip", false, false ],
+        "ENTRY": [ "skip", false, false ]
+      },
+      "edges": [
+        [ "19", "EXIT" ],
+        [ "18", "19" ],
+        [ "17", "18" ],
+        [ "ENTRY", "17" ]
+      ]
+    }
+  }
+}

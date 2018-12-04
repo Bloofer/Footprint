@@ -1,0 +1,15 @@
+digraph _G_ {
+{
+node [shape=box]
+19[label="19: skip"]
+18[label="18: call(@main())" style=filled color=grey]
+17[label="17: falloc(@main, main)"]
+EXIT[label="EXIT: skip"]
+ENTRY[label="ENTRY: skip"]
+}
+19 -> EXIT
+18 -> 19
+17 -> 18
+ENTRY -> 17
+17 -> 18 [label="main," color=red]
+}
