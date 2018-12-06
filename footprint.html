@@ -35,15 +35,14 @@
     <script>
             $(document).ready(function(){
                 
-                $("#alarm").load("text.out");
-                //$("#alarm").overrideMimeType('text/plain'); 
-                hljs.initHighlighting();
+                $("#alarm").load("alarm.out");
+                
+                $('#log pre code').each(function(i, block) {
+                  hljs.highlightBlock();
+                })
+
             });
-        
-            /* document.addEventListener('DOMContentLoaded', function() {
-                hljs.initHighlightingOnLoad();
-            }, false); */
-            
+
             </script>
     <script>
     /* setTimeout(function() {
@@ -107,110 +106,28 @@
 
         <main role="main" class="col-md-11 ml-sm-auto col-lg-11 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <div class="col-md-7">
+            <div class="col-md-6">
               <h1 class="h2">CFG Panel</h1>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
               <h1 class="h2">Log Panel</h1>
             </div>
           </div>
 
           <div class="row">
-            <div class="col-md-7" id="cfg"></div>
-            <div class="col-md-5" id="log">
-              <pre><code id="alarm" type="text/plain" class="hljs cpp">
-<!-- --------------------------------------------------------------------------------
-Front-end begins...
---------------------------------------------------------------------------------
-
-
-Front-end completes: 0.00501000000001
-
-
-
---------------------------------------------------------------------------------
-Translation to graphs begins...
---------------------------------------------------------------------------------
-
-
-#nodes all   : 18
-#unreachable : 0
-
-Translation to graphs completes: 0.000117000000001
-
-
-
---------------------------------------------------------------------------------
-Pre-analysis begins...
---------------------------------------------------------------------------------
-
-
-iteration : 1
-iteration : 2
-iteration : 3
-iteration : 4
-mem size : 10
-
-#functions all : 2
-#recursive : 0
-#unreachable   : 0
-
-Pre-analysis completes: 0.000284
-To inline : []
-Excluded variable-arguments functions : []
-Excluded recursive functions : []
-Excluded too large functions : []
-#Procs : 2
-#Nodes : 18
-
-
-
---------------------------------------------------------------------------------
-Itv Sparse Analysis begins...
---------------------------------------------------------------------------------
-
-#total abstract locations  = 11
-#flow-sensitive abstract locations  = 11
-Access Analysis begins...
-Access Analysis completes: 9e-05
-Def-use graph construction begins...
-draw intra-procedural edges
-draw inter-procedural edges
-Def-use graph construction completes: 7.50000000001e-05
-#Nodes in def-use graph : 11
-#Locs on def-use graph : 9
-Workorder computation begins...
-Workorder computation completes: 2.80000000001e-05
-Fixpoint iteration with widening begins...
-
-#iteration in widening : 11
-Fixpoint iteration with widening completes: 8.90000000001e-05
-
-
-
---------------------------------------------------------------------------------
-Generate Alarm Report begins...
---------------------------------------------------------------------------------
-
-
-Generate Alarm Report completes: 2.50000000001e-05
-
-Itv Sparse Analysis completes: 0.000338
-
-= Alarms =
-1. case1of1.c:14 {main} BotAlarm
-  strncpy ((char */* __restrict  */)StartOf(name), (char const   */* __restrict  */)StartOf(*p.d_name), (size_t )20) @main-13:  Array is Bot BotAlarm
-  strncpy ((char */* __restrict  */)StartOf(name), (char const   */* __restrict  */)StartOf(*p.d_name), (size_t )20) @main-13:  offset: [19, 19], size: [100, 100] Proven, allocsite: main-7
-  *(p) @main-13:  offset: [0, 0], size: [0, 0] UnProven, allocsite: __extern__readdir
-
-#queries                 : 3
-#queries mod alarm point : 1
-#proven                  : 0
-#unproven                : 1
-#bot-involved            : 1
-Finished properly.
-0.00594 -->
-              </code></pre>
+            <div class="col-md-6" id="cfg"></div>
+            <div class="col-md-6" id="log">
+              <div class="tab" style="height:40px;">
+                <button class="tablinks" onclick="openCity(event, 'atab')" style="font-size:large; width:50%; transform:translate(0%,-13%);">Alarm</button>
+                <button class="tablinks" onclick="openCity(event, 'ltab')" style="font-size:large; width:50%; transform:translate(0%,-13%);">Log</button>
+              </div>
+              <div id="atab" class="tabcontent">
+                <pre><code id="alarm" class="hljs cpp">
+                </code></pre>
+              </div>
+              <div id="ltab" class="tabcontent" style="display: none;">
+                aaaa
+              </div>
             </div>
           </div>
         
@@ -262,30 +179,7 @@ Finished properly.
       .attr("width", "100%")
       .attr("height", "800px");
 
-    // svg 파일을 로드
-    /* d3.xml("main.svg")
-        .then(function(xml) {
-            
-            document.getElementById("cfg").appendChild(xml.documentElement);
-
-            d3.select('#cfg')
-                .select('svg')
-                .attr('width', '100%')
-                .attr('height', '100%');
-
-            let nodes = d3.selectAll('.node');
-            console.log(nodes);
-
-            let edges = d3.selectAll('.edge');
-            console.log(edges);
-
-        }); */
-
-        /* function load_home() {
-            document.getElementById("content").innerHTML='<object type="text/html" data="home.html" ></object>';
-        } */
-
-        d3.json("a(cfg).json")
+    d3.json("a(cfg).json")
         .then(function(data){
 
           console.log('json data >>>', data["cfgs"]["main"]);
@@ -456,6 +350,35 @@ Finished properly.
           }
 
         });
+
+    d3.xml("memory.json")
+        .then(function(data){
+
+            console.log(data);
+            
+
+        });
+
+    function openCity(evt, cityName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
 
     </script>
   </body>
