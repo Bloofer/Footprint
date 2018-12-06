@@ -22,6 +22,35 @@
 
     <!-- Custom styles for this template -->
     <link href="asset/dashboard.css" rel="stylesheet">
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    
+
+    <!-- Code renderer highlight.js -->
+    <link rel="stylesheet" href="asset/highlight/styles/androidstudio.css">
+    <script src="asset/highlight/highlight.pack.js"></script>
+
+    <script>
+            $(document).ready(function(){
+                
+                $("#alarm").load("text.out");
+                //$("#alarm").overrideMimeType('text/plain'); 
+                hljs.initHighlighting();
+            });
+        
+            /* document.addEventListener('DOMContentLoaded', function() {
+                hljs.initHighlightingOnLoad();
+            }, false); */
+            
+            </script>
+    <script>
+    /* setTimeout(function() {
+        hljs.initHighlightingOnLoad()
+    }, 1000); */
+    //hljs.initHighlightingOnLoad();
+    </script>
   </head>
 
   <body>
@@ -89,26 +118,99 @@
           <div class="row">
             <div class="col-md-7" id="cfg"></div>
             <div class="col-md-5" id="log">
-                TEST LOGGING SCRIPT
-                <br>
-                The standard Lorem Ipsum passage, used since the 1500s
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                <br>    
-                Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
-                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
-                totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
-                Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, 
-                sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. 
-                Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? 
-                Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, 
-                vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
-                <br>    
+              <pre><code id="alarm" type="text/plain" class="hljs cpp">
+<!-- --------------------------------------------------------------------------------
+Front-end begins...
+--------------------------------------------------------------------------------
+
+
+Front-end completes: 0.00501000000001
+
+
+
+--------------------------------------------------------------------------------
+Translation to graphs begins...
+--------------------------------------------------------------------------------
+
+
+#nodes all   : 18
+#unreachable : 0
+
+Translation to graphs completes: 0.000117000000001
+
+
+
+--------------------------------------------------------------------------------
+Pre-analysis begins...
+--------------------------------------------------------------------------------
+
+
+iteration : 1
+iteration : 2
+iteration : 3
+iteration : 4
+mem size : 10
+
+#functions all : 2
+#recursive : 0
+#unreachable   : 0
+
+Pre-analysis completes: 0.000284
+To inline : []
+Excluded variable-arguments functions : []
+Excluded recursive functions : []
+Excluded too large functions : []
+#Procs : 2
+#Nodes : 18
+
+
+
+--------------------------------------------------------------------------------
+Itv Sparse Analysis begins...
+--------------------------------------------------------------------------------
+
+#total abstract locations  = 11
+#flow-sensitive abstract locations  = 11
+Access Analysis begins...
+Access Analysis completes: 9e-05
+Def-use graph construction begins...
+draw intra-procedural edges
+draw inter-procedural edges
+Def-use graph construction completes: 7.50000000001e-05
+#Nodes in def-use graph : 11
+#Locs on def-use graph : 9
+Workorder computation begins...
+Workorder computation completes: 2.80000000001e-05
+Fixpoint iteration with widening begins...
+
+#iteration in widening : 11
+Fixpoint iteration with widening completes: 8.90000000001e-05
+
+
+
+--------------------------------------------------------------------------------
+Generate Alarm Report begins...
+--------------------------------------------------------------------------------
+
+
+Generate Alarm Report completes: 2.50000000001e-05
+
+Itv Sparse Analysis completes: 0.000338
+
+= Alarms =
+1. case1of1.c:14 {main} BotAlarm
+  strncpy ((char */* __restrict  */)StartOf(name), (char const   */* __restrict  */)StartOf(*p.d_name), (size_t )20) @main-13:  Array is Bot BotAlarm
+  strncpy ((char */* __restrict  */)StartOf(name), (char const   */* __restrict  */)StartOf(*p.d_name), (size_t )20) @main-13:  offset: [19, 19], size: [100, 100] Proven, allocsite: main-7
+  *(p) @main-13:  offset: [0, 0], size: [0, 0] UnProven, allocsite: __extern__readdir
+
+#queries                 : 3
+#queries mod alarm point : 1
+#proven                  : 0
+#unproven                : 1
+#bot-involved            : 1
+Finished properly.
+0.00594 -->
+              </code></pre>
             </div>
           </div>
         
@@ -119,8 +221,8 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="assets/jquery-slim.min.js"><\/script>')</script>
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="assets/jquery-slim.min.js"><\/script>')</script> -->
     <script src="asset/popper.min.js"></script>
     <script src="asset/bootstrap.min.css"></script>
 
@@ -178,6 +280,10 @@
             console.log(edges);
 
         }); */
+
+        /* function load_home() {
+            document.getElementById("content").innerHTML='<object type="text/html" data="home.html" ></object>';
+        } */
 
         d3.json("a(cfg).json")
         .then(function(data){
