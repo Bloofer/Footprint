@@ -1,0 +1,7 @@
+[{"node":"main-9",
+"input":["bot"]
+"output":[
+{"loc" : "(main,dir_info)","v" : {"itv":"bot", "powloc":"bot", "arrblk":["allocsite" :"__extern__opendir", "arrinfo": {"[0, 0]", "[1, 1]", "[1, 1]", "[0, +oo]", bot}], "structblk":""bot"", "powproc":" bot"},
+"fps":[{"v" : { "itv":"bot", "powloc":"bot",  "Arrsite":"__extern__opendir","arrinfo":" {"[0, 0]", "[1, 1]", "[1, 1]", "[0, +oo]", bot}" , "structblk":"bot", "powproc":"bot" }, "exp" : "opendir((\".\"))", "pgm_point" : "itvSem.ml:428(test/case1of1.c:9)@main-9", "o":"407" , "p":"1"}]},
+{"loc" :"__extern__opendir","v" : {"itv":[-oo, +oo], "powloc":"bot", "arrblk":"bot", "structblk":""bot"", "powproc":" bot"},
+"fps":[{"v" : { "itv":"[-oo, +oo]", "powloc":"bot", "Arrsite":"bot", "arrinfo":"bot", "structblk":"bot", "powproc":"bot" }, "exp" : "opendir((\".\"))", "pgm_point" : "itvSem.ml:431(test/case1of1.c:9)@main-9", "o":"408" , "p":"3"}]}]}]
