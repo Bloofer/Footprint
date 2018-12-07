@@ -19,15 +19,13 @@
 
     <!-- Bootstrap core CSS -->
     <link href="asset/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="asset/dashboard.css" rel="stylesheet">
 
-
-
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     
-
     <!-- Code renderer highlight.js -->
     <link rel="stylesheet" href="asset/highlight/styles/androidstudio.css">
     <script src="asset/highlight/highlight.pack.js"></script>
@@ -116,8 +114,8 @@
 
           <div class="row">
             <div class="col-md-6" id="cfg">
-                <button id="zoom_in">+</button>
-                <button id="zoom_out">-</button>
+                <button id="zoom_in" style="border-radius:4px;"><span class="glyphicon glyphicon-plus">+</span></button>
+                <button id="zoom_out" style="border-radius:4px;"><span class="glyphicon glyphicon-minus">-</span></button>
             </div>
             <div class="col-md-6" id="log">
               <div class="tab" style="height:40px;">
@@ -300,8 +298,11 @@
           node.append("title")
               .text(function (d) { return d.id + ":" + d.stmt; });
           
+          var min_zoom = 0.1;
+          var max_zoom = 7;
+
           //add zoom capabilities 
-          var zoom_handler = d3.zoom()
+          var zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
               .on("zoom", zoom_actions);
 
           zoom_handler(svg); 
@@ -330,7 +331,58 @@
           function zoom_actions(){
               g.attr("transform", d3.event.transform)
           }
+
+            function zoomed() {
+                svg.attr("transform",
+                    "translate(" + d3.zoom().translate() + ")" +
+                    "scale(" + d3.zoom().scale() + ")"
+                );
+            }
+
+            function interpolateZoom (translate, scale) {
+                var self = this;
+                return d3.transition().duration(350).tween("zoom", function () {
+                    var iTranslate = d3.interpolate(d3.zoom().translate(), translate),
+                        iScale = d3.interpolate(d3.zoom().scale(), scale);
+                    return function (t) {
+                        zoom_handler
+                            .scale(iScale(t))
+                            .translate(iTranslate(t));
+                            zoomed();
+                    };
+                });
+            }
+
+            function zoomClick() {
+                var clicked = d3.event.target,
+                    direction = 1,
+                    factor = 0.2,
+                    target_zoom = 1,
+                    center = [width / 2, height / 2],
+                    extent = zoom_handler.scaleExtent(),
+                    translate = zoom_handler.translate(),
+                    translate0 = [],
+                    l = [],
+                    view = {x: translate[0], y: translate[1], k: zoom_handler.scale()};
+
+                d3.event.preventDefault();
+                direction = (this.id === 'zoom_in') ? 1 : -1;
+                target_zoom = zoom_handler.scale() * (1 + factor * direction);
+
+                if (target_zoom < extent[0] || target_zoom > extent[1]) { return false; }
+
+                translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
+                view.k = target_zoom;
+                l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
+
+                view.x += center[0] - l[0];
+                view.y += center[1] - l[1];
+
+                interpolateZoom([view.x, view.y], view.k);
+            }
           
+            d3.selectAll('button').on('click', zoomClick);  
+
           function ticked() {
               //update circle positions each tick of the simulation 
               node
@@ -350,16 +402,16 @@
 
         });
 
-var zoom = d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
+/* var zoom = d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
 
 function zoomed() {
     svg.attr("transform",
         "translate(" + zoom.translate() + ")" +
         "scale(" + zoom.scale() + ")"
     );
-}
+} */
 
-function interpolateZoom (translate, scale) {
+/* function interpolateZoom (translate, scale) {
     var self = this;
     return d3.transition().duration(350).tween("zoom", function () {
         var iTranslate = d3.interpolate(zoom.translate(), translate),
@@ -399,9 +451,9 @@ function zoomClick() {
     view.y += center[1] - l[1];
 
     interpolateZoom([view.x, view.y], view.k);
-}
+} */
 
-d3.selectAll('button').on('click', zoomClick);
+
 
     d3.json("memory.json")
         .then(function(data){
@@ -412,7 +464,7 @@ d3.selectAll('button').on('click', zoomClick);
 
         });
 
-    function changeTab(evt, cityName) {
+    function changeTab(evt, tabName) {
         // Declare all variables
         var i, tabcontent, tablinks;
 
@@ -429,7 +481,7 @@ d3.selectAll('button').on('click', zoomClick);
         }
 
         // Show the current tab, and add an "active" class to the button that opened the tab
-        document.getElementById(cityName).style.display = "block";
+        document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
     }
 
