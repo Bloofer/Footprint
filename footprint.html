@@ -200,6 +200,8 @@
     d3.json("a(cfg).json")
         .then(function(data){
 
+          // 맨 처음 Call Graph 네트워크 그리는 부분
+
           cfgs = getCfgNames(data);
           let graph = data["callgraph"];
           let nodes = graph2cgnodes(graph);
@@ -318,57 +320,6 @@
               g.attr("transform", d3.event.transform)
           }
 
-            /* function zoomed() {
-                svg.attr("transform",
-                    "translate(" + d3.zoom().translate() + ")" +
-                    "scale(" + d3.zoom().scale() + ")"
-                );
-            }
-
-            function interpolateZoom (translate, scale) {
-                var self = this;
-                return d3.transition().duration(350).tween("zoom", function () {
-                    var iTranslate = d3.interpolate(d3.zoom().translate(), translate),
-                        iScale = d3.interpolate(d3.zoom().scale(), scale);
-                    return function (t) {
-                        zoom_handler
-                            .scale(iScale(t))
-                            .translate(iTranslate(t));
-                            zoomed();
-                    };
-                });
-            }
-
-            function zoomClick() {
-                var clicked = d3.event.target,
-                    direction = 1,
-                    factor = 0.2,
-                    target_zoom = 1,
-                    center = [width / 2, height / 2],
-                    extent = zoom_handler.scaleExtent(),
-                    translate = zoom_handler.translate(),
-                    translate0 = [],
-                    l = [],
-                    view = {x: translate[0], y: translate[1], k: zoom_handler.scale()};
-
-                d3.event.preventDefault();
-                direction = (this.id === 'zoom_in') ? 1 : -1;
-                target_zoom = zoom_handler.scale() * (1 + factor * direction);
-
-                if (target_zoom < extent[0] || target_zoom > extent[1]) { return false; }
-
-                translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
-                view.k = target_zoom;
-                l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
-
-                view.x += center[0] - l[0];
-                view.y += center[1] - l[1];
-
-                interpolateZoom([view.x, view.y], view.k);
-            }
-          
-            d3.selectAll('button').on('click', zoomClick);   */
-
           function ticked() {
               //update circle positions each tick of the simulation 
               node
@@ -396,21 +347,12 @@
 
             d3.selectAll("g").remove().exit().data(data);
 
+            console.log("test1");
+
             cfgs = getCfgNames(data);
-            console.log('json data >>>', data["callgraph"]);
-            console.log('json data >>>', data["cfgs"]["main"]);
-
-            let graph = data["cfgs"]["main"];
-
-            console.log('graph >>>', graph);
-        
-            let nodes = graph2cgnodes(graph);
+            let graph = data["cfgs"]["main"];        
+            let nodes = graph2nodes(graph);
             let links = graph2links(graph)
-
-            console.log('nodes >>>', nodes);
-            console.log('links >>>', links);
-            console.log('nodes >>>', graph2cgnodes(data["cfgs"]["main"]));
-            console.log('links >>>', graph2links(data["cfgs"]["main"]));
 
             let simulation = d3.forceSimulation()
                 .nodes(nodes);                          
@@ -422,11 +364,8 @@
                 .force("collide", d3.forceCollide().radius(2))
                 ;         
 
-            console.log(simulation);
-
             simulation
                 .on("tick", ticked);
-
 
             //add encompassing group for the zoom 
             var g = svg.append("g")
@@ -485,6 +424,8 @@
                 .style("font-family", "sans-serif")
                 .style("font-size", "0.7em")
                 .text(function (d) { return d.stmt; });
+
+            console.log("test3");
 
             node.on("click", function (d) {
                 d3.event.stopImmediatePropagation();
@@ -548,62 +489,6 @@
         });
 
     }
-        
-
-    
-
-/* var zoom = d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
-
-function zoomed() {
-    svg.attr("transform",
-        "translate(" + zoom.translate() + ")" +
-        "scale(" + zoom.scale() + ")"
-    );
-} */
-
-/* function interpolateZoom (translate, scale) {
-    var self = this;
-    return d3.transition().duration(350).tween("zoom", function () {
-        var iTranslate = d3.interpolate(zoom.translate(), translate),
-            iScale = d3.interpolate(zoom.scale(), scale);
-        return function (t) {
-            zoom
-                .scale(iScale(t))
-                .translate(iTranslate(t));
-            zoomed();
-        };
-    });
-}
-
-function zoomClick() {
-    var clicked = d3.event.target,
-        direction = 1,
-        factor = 0.2,
-        target_zoom = 1,
-        center = [width / 2, height / 2],
-        extent = zoom.scaleExtent(),
-        translate = zoom.translate(),
-        translate0 = [],
-        l = [],
-        view = {x: translate[0], y: translate[1], k: zoom.scale()};
-
-    d3.event.preventDefault();
-    direction = (this.id === 'zoom_in') ? 1 : -1;
-    target_zoom = zoom.scale() * (1 + factor * direction);
-
-    if (target_zoom < extent[0] || target_zoom > extent[1]) { return false; }
-
-    translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
-    view.k = target_zoom;
-    l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
-
-    view.x += center[0] - l[0];
-    view.y += center[1] - l[1];
-
-    interpolateZoom([view.x, view.y], view.k);
-} */
-
-
 
     d3.json("memory.json")
         .then(function(data){
