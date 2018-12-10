@@ -11,6 +11,7 @@
     .svgbg {
         border-style: solid;
         border-width: 1px;
+        border-radius: 3px;
         border-color: #ccc; 
         height: 790px;
     }
@@ -108,12 +109,12 @@
           </div>
         </nav>
 
-        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 pt-3 px-4">
+        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 pt-3 px-4" style="margin-left:-15px;">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <div class="col-md-6">
               <h1 class="h2">CFG Panel</h1>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" style="margin-left:15px;">
               <h1 class="h2">Log Panel</h1>
             </div>
           </div>
@@ -162,6 +163,7 @@
     let width = 960;
     let height = 500;
     let cfgs = []; // 파싱된 CallGraph의 CFG 이름들
+    let cfgStatus; // 현재 CFG Panel에 렌더링하고 있는 그래프 이름. (CallGraph는 cg)
 
     let graph2nodes = function(gr){
     // 그래프 타입 배열을 노드 타입 배열로 변환
@@ -203,7 +205,7 @@
       .attr("width", "100%")
       .attr("height", "800px");
 
-    d3.json("a(cfg).json")
+    d3.json("json/a(with dug).json")
         .then(function(data){
 
             // 초기 데이터 엔트리
@@ -212,17 +214,35 @@
 
         });
 
+    // CFG 그래프 렌더링 용 변수들
+    let graph;
+    let nodes;
+    let links;
+    let simulation;
+
+    let g;
+    let link;
+    let node;
+
+    let drag_handler;
+    let text;
+
+    let min_zoom;
+    let max_zoom;
+    let zoom_handler;
 
     let renderCg = function(data){
 
     // 맨 처음 Call Graph 네트워크 그리는 부분
 
-        cfgs = getCfgNames(data);
-        let graph = data["callgraph"];
-        let nodes = graph2cgnodes(graph);
-        let links = graph2links(graph)
+        cfgStatus = "cg"; // 맨 처음은 CallGraph 렌더링
 
-        let simulation = d3.forceSimulation()
+        cfgs = getCfgNames(data);
+        graph = data["callgraph"];
+        nodes = graph2cgnodes(graph);
+        links = graph2links(graph)
+
+        simulation = d3.forceSimulation()
             .nodes(nodes);                          
 
         simulation
@@ -236,7 +256,7 @@
             .on("tick", ticked);
 
         //add encompassing group for the zoom 
-        var g = svg.append("g")
+        g = svg.append("g")
             .attr("class", "everything");
 
         //Create deffinition for the arrow markers showing relationship directions
@@ -251,7 +271,7 @@
             .append("svg:path")
             .attr("d", "M0,-5L10,0L0,5");        
 
-        var link = g.append("g")
+        link = g.append("g")
             .attr("class", "links")
             .selectAll("line")
             .data(links)
@@ -259,12 +279,18 @@
             .attr("stroke", function(d) { return d3.color("#000000"); })
             .attr("marker-end", "url(#arrow)");
 
-        var node = g.append("g")
+        node = g.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
             .data(nodes)
             .enter()
             .append("circle")
+            .on("mouseover", function(d) {
+                mouseOver(d.id);
+            })
+            .on("mouseout", function(d) {
+                mouseOut(d.id);
+            })
             .attr("id", function(d) {
                 console.log(d.id);
                 return d.id;
@@ -279,17 +305,15 @@
                 return d3.color("#FF8D2F"); 
             });
 
-        console.log("test");
-
         //add drag capabilities  
-        var drag_handler = d3.drag()
+        drag_handler = d3.drag()
             .on("start", drag_start)
             .on("drag", drag_drag)
             .on("end", drag_end);	
 
         drag_handler(node);
 
-        var text = g.append("g").attr("class", "labels").selectAll("g")
+        text = g.append("g").attr("class", "labels").selectAll("g") 
             .data(nodes)
             .enter().append("g")
             .append("text")
@@ -305,14 +329,71 @@
             renderCfg(d.id);
         });
 
+        function mouseOver(nid) {
+            console.log(node.selectAll('#'+nid));
+            node.selectAll('#'+nid)
+            .attr("fill", function(){
+                return d3.color("#0000FF");
+            });
+            node.selectAll('#'+nid)
+            .attr("stroke", function(){
+                return d3.color("#000080");
+            });
+        }
+
+        function mouseOut(nid) {
+            node.selectAll('#'+nid)
+            .attr("fill", function(){
+                return d3.color("#FFFF2F");
+            });
+            node.selectAll('#'+nid)
+            .attr("stroke", function(){
+                return d3.color("#FF8D2F");
+            });
+        }
+
+        /* node.on("mouseover", function (d) {
+            // 호버 시, 노드 색상 변환
+
+            console.log(node.select('#'+d.id));
+
+            //node.selectAll(d.id)
+            //d3.select('this').select('circle').attr("fill", function(){
+            node.selectAll("circle")
+            .attr("fill", function(){
+                return d3.color("#0000FF");
+            });
+
+            //d3.select('this').select('circle').attr("fill", function(){
+            node.selectAll("circle")
+            .attr("stroke", function(){
+                return d3.color("#000080");
+            });
+        });
+
+        node.on("mouseout", function (d) {
+            // 호버 종료 시, 노드 색상 변환
+            //d3.select('this').select('circle').attr("fill", function(){
+            node.selectAll("circle")
+            .attr("fill", function(){
+                return d3.color("#FFFF2F");
+            });
+
+            //d3.select('this').select('circle').attr("fill", function(){
+            node.selectAll("circle")
+            .attr("stroke", function(){
+                return d3.color("#FF8D2F");
+            });
+        }); */
+
         node.append("title")
             .text(function (d) { return d.id + ":" + d.stmt; });
         
-        var min_zoom = 0.1;
-        var max_zoom = 7;
+        min_zoom = 0.1;
+        max_zoom = 7;
 
         //add zoom capabilities 
-        var zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
+        zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
             .on("zoom", zoom_actions);
 
         zoom_handler(svg); 
@@ -364,7 +445,9 @@
 
     let renderCfg = function(cid){
 
-        d3.json("a(cfg).json")
+        cfgStatus = cid; // 해당 선택된 CFG 렌더링
+
+        d3.json("json/a(with dug).json")
             .then(function(data){
 
             d3.selectAll("g").remove().exit().data(data);
@@ -372,11 +455,11 @@
             console.log("test1");
 
             cfgs = getCfgNames(data);
-            let graph = data["cfgs"][cid];        
-            let nodes = graph2nodes(graph);
-            let links = graph2links(graph)
+            graph = data["cfgs"][cid];        
+            nodes = graph2nodes(graph);
+            links = graph2links(graph)
 
-            let simulation = d3.forceSimulation()
+            simulation = d3.forceSimulation()
                 .nodes(nodes);                          
 
             simulation
@@ -390,7 +473,7 @@
                 .on("tick", ticked);
 
             //add encompassing group for the zoom 
-            var g = svg.append("g")
+            g = svg.append("g")
                 .attr("class", "everything");
 
             //Create deffinition for the arrow markers showing relationship directions
@@ -405,7 +488,7 @@
                 .append("svg:path")
                 .attr("d", "M0,-5L10,0L0,5");        
 
-            var link = g.append("g")
+            link = g.append("g")
                 .attr("class", "links")
                 .selectAll("line")
                 .data(links)
@@ -413,7 +496,7 @@
                 .attr("stroke", function(d) { return d3.color("#000000"); })
                 .attr("marker-end", "url(#arrow)");
 
-            var node = g.append("g")
+            node = g.append("g")
                 .attr("class", "nodes")
                 .selectAll("circle")
                 .data(nodes)
@@ -430,14 +513,14 @@
                 });
 
             //add drag capabilities  
-            var drag_handler = d3.drag()
+            drag_handler = d3.drag()
                 .on("start", drag_start)
                 .on("drag", drag_drag)
                 .on("end", drag_end);	
 
             drag_handler(node);
 
-            var text = g.append("g").attr("class", "labels").selectAll("g")
+            text = g.append("g").attr("class", "labels").selectAll("g")
                 .data(nodes)
                 .enter().append("g")
                 .append("text")
@@ -447,8 +530,6 @@
                 .style("font-size", "0.7em")
                 .text(function (d) { return d.stmt; });
 
-            console.log("test3");
-
             node.on("click", function (d) {
                 d3.event.stopImmediatePropagation();
                 self.onNodeClicked.emit(d.id);
@@ -457,11 +538,11 @@
             node.append("title")
                 .text(function (d) { return d.id + ":" + d.stmt; });
             
-            var min_zoom = 0.1;
-            var max_zoom = 7;
+            min_zoom = 0.1;
+            max_zoom = 7;
 
             //add zoom capabilities 
-            var zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
+            zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
                 .on("zoom", zoom_actions);
 
             zoom_handler(svg); 
@@ -513,24 +594,17 @@
     }
 
     document.getElementById("home").onclick = function() {
+        // 초기 CallGraph 렌더링하기
 
-        d3.json("a(cfg).json")
+        cfgStatus = "cg";
+
+        d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCg(data);
             });
 
     };
-
-
-    d3.json("memory.json")
-        .then(function(data){
-
-            for(i in data){
-                console.log(data[i]);
-            }
-
-        });
 
     function changeTab(evt, tabName) {
         // Declare all variables
