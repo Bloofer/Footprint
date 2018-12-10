@@ -8,6 +8,12 @@
     input {
         vertical-align: middle; 
     }
+    .svgbg {
+        border-style: solid;
+        border-width: 1px;
+        border-color: #ccc; 
+        height: 790px;
+    }
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -113,10 +119,10 @@
           </div>
 
           <div class="row">
-            <div class="col-md-6" id="cfg">
-                <button id="main" style="border-radius:4px; width:40px; height:40px;"><span data-feather="home"></span></button>
-                <button id="zoom_in" style="border-radius:4px; width:40px; height:40px;"><span data-feather="plus"></span></button>
-                <button id="zoom_out" style="border-radius:4px; width:40px; height:40px;"><span data-feather="minus"></span></button>
+            <div class="col-md-6 svgbg" id="cfg">
+                <button id="home" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="home"></span></button>
+                <button id="zoom_in" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="plus"></span></button>
+                <button id="zoom_out" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="minus"></span></button>
             </div>
             <div class="col-md-6" id="log">
               <div class="tab" style="height:40px;">
@@ -200,147 +206,163 @@
     d3.json("a(cfg).json")
         .then(function(data){
 
-          // 맨 처음 Call Graph 네트워크 그리는 부분
+            // 초기 데이터 엔트리
 
-          cfgs = getCfgNames(data);
-          let graph = data["callgraph"];
-          let nodes = graph2cgnodes(graph);
-          let links = graph2links(graph)
-
-          let simulation = d3.forceSimulation()
-              .nodes(nodes);                          
-
-          simulation
-              .force("charge_force", d3.forceManyBody().strength(-100))    
-              .force("center_force", d3.forceCenter(width / 2, height / 2))
-              .force("links", d3.forceLink(links).id(function (d) { return d.id; }))            
-              .force("collide", d3.forceCollide().radius(2))
-              ;         
-
-          simulation
-              .on("tick", ticked);
-
-          //add encompassing group for the zoom 
-          var g = svg.append("g")
-              .attr("class", "everything");
-
-          //Create deffinition for the arrow markers showing relationship directions
-          g.append("defs").append("marker")
-              .attr("id", "arrow")
-              .attr("viewBox", "0 -3 10 10")
-              .attr("refX", 20)
-              .attr("refY", 0)
-              .attr("markerWidth", 8)
-              .attr("markerHeight", 8)
-              .attr("orient", "auto")
-              .append("svg:path")
-              .attr("d", "M0,-5L10,0L0,5");        
-
-          var link = g.append("g")
-              .attr("class", "links")
-              .selectAll("line")
-              .data(links)
-              .enter().append("line")
-              .attr("stroke", function(d) { return d3.color("#000000"); })
-              .attr("marker-end", "url(#arrow)");
-
-          var node = g.append("g")
-              .attr("class", "nodes")
-              .selectAll("circle")
-              .data(nodes)
-              .enter()
-              .append("circle")
-              .attr("r", 10)
-              .attr("fill", function(d) { 
-                  console.log(d);
-                  /* if (d.sourceOnly) return d3.color("#0000FF"); */
-                  return d3.color("#FFFF2F"); })
-              .style("stroke", function(d) { 
-                  /* if (d.sourceOnly) return d3.color("#000080"); */
-                  return d3.color("#FF8D2F"); 
-              });
-
-          //add drag capabilities  
-          var drag_handler = d3.drag()
-              .on("start", drag_start)
-              .on("drag", drag_drag)
-              .on("end", drag_end);	
-
-          drag_handler(node);
-
-          var text = g.append("g").attr("class", "labels").selectAll("g")
-              .data(nodes)
-              .enter().append("g")
-              .append("text")
-              .attr("x", 14)
-              .attr("y", ".31em")
-              .style("font-family", "sans-serif")
-              .style("font-size", "0.7em")
-              .text(function (d) { return d.stmt; });
-
-          node.on("click", function (d) {
-              d3.event.stopImmediatePropagation();
-              self.onNodeClicked.emit(d.id);
-          });
-
-          node.append("title")
-              .text(function (d) { return d.id + ":" + d.stmt; });
-          
-          var min_zoom = 0.1;
-          var max_zoom = 7;
-
-          //add zoom capabilities 
-          var zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
-              .on("zoom", zoom_actions);
-
-          zoom_handler(svg); 
-
-          //Drag functions 
-          //d is the node 
-          function drag_start(d) {
-              if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-              d.fx = d.x;
-              d.fy = d.y;
-          }
-          
-          //make sure you can't drag the circle outside the box
-          function drag_drag(d) {
-              d.fx = d3.event.x;
-              d.fy = d3.event.y;
-          }
-          
-          function drag_end(d) {
-              if (!d3.event.active) simulation.alphaTarget(0);
-              d.fx = null;
-              d.fy = null;
-          }
-          
-          //Zoom functions 
-          function zoom_actions(){
-              g.attr("transform", d3.event.transform)
-          }
-
-          function ticked() {
-              //update circle positions each tick of the simulation 
-              node
-                  .attr("cx", function(d) { return d.x; })
-                  .attr("cy", function(d) { return d.y; });
-                  
-              //update link positions 
-              link
-                  .attr("x1", function(d) { return d.source.x; })
-                  .attr("y1", function(d) { return d.source.y; })
-                  .attr("x2", function(d) { return d.target.x; })
-                  .attr("y2", function(d) { return d.target.y; });
-
-              text
-                  .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
-          }
+            renderCg(data);
 
         });
 
 
-    document.getElementById("main").onclick = function(){
+    let renderCg = function(data){
+
+    // 맨 처음 Call Graph 네트워크 그리는 부분
+
+        cfgs = getCfgNames(data);
+        let graph = data["callgraph"];
+        let nodes = graph2cgnodes(graph);
+        let links = graph2links(graph)
+
+        let simulation = d3.forceSimulation()
+            .nodes(nodes);                          
+
+        simulation
+            .force("charge_force", d3.forceManyBody().strength(-100))    
+            .force("center_force", d3.forceCenter(width / 2, height / 2))
+            .force("links", d3.forceLink(links).id(function (d) { return d.id; }))            
+            .force("collide", d3.forceCollide().radius(2))
+            ;         
+
+        simulation
+            .on("tick", ticked);
+
+        //add encompassing group for the zoom 
+        var g = svg.append("g")
+            .attr("class", "everything");
+
+        //Create deffinition for the arrow markers showing relationship directions
+        g.append("defs").append("marker")
+            .attr("id", "arrow")
+            .attr("viewBox", "0 -3 10 10")
+            .attr("refX", 20)
+            .attr("refY", 0)
+            .attr("markerWidth", 8)
+            .attr("markerHeight", 8)
+            .attr("orient", "auto")
+            .append("svg:path")
+            .attr("d", "M0,-5L10,0L0,5");        
+
+        var link = g.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke", function(d) { return d3.color("#000000"); })
+            .attr("marker-end", "url(#arrow)");
+
+        var node = g.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(nodes)
+            .enter()
+            .append("circle")
+            .attr("id", function(d) {
+                console.log(d.id);
+                return d.id;
+            })
+            .attr("r", 10)
+            .attr("fill", function(d) { 
+                console.log(d);
+                /* if (d.sourceOnly) return d3.color("#0000FF"); */
+                return d3.color("#FFFF2F"); })
+            .style("stroke", function(d) { 
+                /* if (d.sourceOnly) return d3.color("#000080"); */
+                return d3.color("#FF8D2F"); 
+            });
+
+        console.log("test");
+
+        //add drag capabilities  
+        var drag_handler = d3.drag()
+            .on("start", drag_start)
+            .on("drag", drag_drag)
+            .on("end", drag_end);	
+
+        drag_handler(node);
+
+        var text = g.append("g").attr("class", "labels").selectAll("g")
+            .data(nodes)
+            .enter().append("g")
+            .append("text")
+            .attr("x", 14)
+            .attr("y", ".31em")
+            .style("font-family", "sans-serif")
+            .style("font-size", "0.7em")
+            .text(function (d) { return d.stmt; });
+
+        node.on("click", function (d) {
+            //d3.event.stopImmediatePropagation();
+            //self.onNodeClicked.emit(d.id);
+            renderCfg(d.id);
+        });
+
+        node.append("title")
+            .text(function (d) { return d.id + ":" + d.stmt; });
+        
+        var min_zoom = 0.1;
+        var max_zoom = 7;
+
+        //add zoom capabilities 
+        var zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
+            .on("zoom", zoom_actions);
+
+        zoom_handler(svg); 
+
+        //Drag functions 
+        //d is the node 
+        function drag_start(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        //make sure you can't drag the circle outside the box
+        function drag_drag(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+        
+        function drag_end(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+        
+        //Zoom functions 
+        function zoom_actions(){
+            g.attr("transform", d3.event.transform)
+        }
+
+        function ticked() {
+            //update circle positions each tick of the simulation 
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+                
+            //update link positions 
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            text
+                .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+        }
+    
+    }
+
+
+    let renderCfg = function(cid){
 
         d3.json("a(cfg).json")
             .then(function(data){
@@ -350,7 +372,7 @@
             console.log("test1");
 
             cfgs = getCfgNames(data);
-            let graph = data["cfgs"]["main"];        
+            let graph = data["cfgs"][cid];        
             let nodes = graph2nodes(graph);
             let links = graph2links(graph)
 
@@ -489,6 +511,17 @@
         });
 
     }
+
+    document.getElementById("home").onclick = function() {
+
+        d3.json("a(cfg).json")
+            .then(function(data){
+                d3.selectAll("g").remove().exit().data(data);
+                renderCg(data);
+            });
+
+    };
+
 
     d3.json("memory.json")
         .then(function(data){
