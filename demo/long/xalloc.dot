@@ -1,0 +1,58 @@
+digraph xalloc {
+{
+node [shape=box]
+246[label="246: skip"]
+245[label="245: salloc(__cil_tmp5, \"Out of memory!!\")"]
+243[label="243: call(@perror(__cil_tmp5))" style=filled color=grey]
+242[label="242: alloc(tmp,[(size_t )((unsigned int )sz)])"]
+240[label="240: set(p,(char *)tmp)"]
+238[label="238: set(sz,1)"]
+237[label="237: assume(((unsigned long )p)==((unsigned long )((void *)0)))"]
+236[label="236: assume(!(((unsigned long )p)==((unsigned long )((void *)0))))"]
+235[label="235: assume(sz<=0)"]
+234[label="234: assume(!(sz<=0))"]
+233[label="233: return p"]
+229[label="229: skip"]
+225[label="225: skip"]
+223[label="223: skip"]
+EXIT[label="EXIT: skip"]
+ENTRY[label="ENTRY: skip"]
+}
+246 -> 233
+245 -> 243
+243 -> 246
+242 -> 240
+240 -> 229
+238 -> 225
+237 -> 245
+236 -> 233
+235 -> 238
+234 -> 225
+233 -> EXIT
+229 -> 237
+229 -> 236
+225 -> 242
+223 -> 235
+223 -> 234
+ENTRY -> 223
+245 -> 243 [label="(xalloc,__cil_tmp5)," color=red]
+245 -> 233 [label="xalloc-2450,(xalloc,__cil_tmp5)," color=red]
+242 -> 240 [label="(xalloc,tmp)," color=red]
+242 -> 233 [label="(xalloc,tmp)," color=red]
+240 -> 237 [label="(xalloc,p)," color=red]
+240 -> 236 [label="(xalloc,p)," color=red]
+238 -> 225 [label="(xalloc,sz)," color=red]
+237 -> 233 [label="(xalloc,p)," color=red]
+236 -> 233 [label="(xalloc,p)," color=red]
+235 -> 238 [label="(xalloc,sz)," color=red]
+234 -> 225 [label="(xalloc,sz)," color=red]
+233 -> EXIT [label="xalloc-2450,(xalloc,tmp),(xalloc,sz),(xalloc,p),(xalloc,__cil_tmp5),(recipient,tmp___6),(recipient,tmp___4),(recipient,tmp___1),(recipient,buf)," color=red]
+225 -> 242 [label="(xalloc,sz)," color=red]
+225 -> 233 [label="(xalloc,sz)," color=red]
+ENTRY -> 245 [label="xalloc-2450,(xalloc,__cil_tmp5)," color=red]
+ENTRY -> 242 [label="(xalloc,tmp)," color=red]
+ENTRY -> 240 [label="(xalloc,p)," color=red]
+ENTRY -> 235 [label="(xalloc,sz)," color=red]
+ENTRY -> 234 [label="(xalloc,sz)," color=red]
+ENTRY -> 233 [label="xalloc-2450,(xalloc,__cil_tmp5),(recipient,tmp___6),(recipient,tmp___4),(recipient,tmp___1),(recipient,buf)," color=red]
+}

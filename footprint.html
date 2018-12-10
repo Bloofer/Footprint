@@ -187,7 +187,7 @@
     // 그래프 타입 배열을 링크 타입 배열로 변환
         let links = [];
         for(i in gr["edges"]){
-            links.push({"source":gr["edges"][i][0], "target":gr["edges"][i][1]});
+            links.push({"source":gr["edges"][i][0], "target":gr["edges"][i][1], "text":""});
         }
         return links;
     }
@@ -235,225 +235,37 @@
     let drag_handler;
     let text;
 
+    // 줌 관련 렌더링 변수들
     let min_zoom;
     let max_zoom;
     let zoom_handler;
 
-    let renderCg = function(data){
+    let getDugChain = function(data, cid){
 
-    // 맨 처음 Call Graph 네트워크 그리는 부분
+        let dugChain = data["dugraph"]["edges"];
 
-        cfgStatus = "cg"; // 맨 처음은 CallGraph 렌더링
+        let curChain = [];
+        for(i in dugChain){
+            if(dugChain[i][0].substring(0, cid.length) === cid){
+            // DUG 체인이 현재 렌더링된 그래프에 해당될 때
+                let src = dugChain[i][0].substring(dugChain[i][0].indexOf('\-')+1);
+                let tgt = dugChain[i][1].substring(dugChain[i][1].indexOf('\-')+1);
+                let txt = dugChain[i][2];
+                curChain.push({"source":src, "target":tgt, "text":txt});
+            }
+        }
 
-        cfgs = getCfgNames(data);
-        graph = data["callgraph"];
-        nodes = graph2cgnodes(graph);
-        links = graph2links(graph)
+        return curChain;
 
-        simulation = d3.forceSimulation()
-            .nodes(nodes);                          
-
-        simulation
-            .force("charge_force", d3.forceManyBody().strength(-100))    
-            .force("center_force", d3.forceCenter(width / 2, height / 2))
-            .force("links", d3.forceLink(links).id(function (d) { return d.id; }))            
-            .force("collide", d3.forceCollide().radius(2))
-            ;         
-
-        simulation
-            .on("tick", ticked);
-
-        //add encompassing group for the zoom 
-        g = svg.append("g")
-            .attr("class", "everything");
-
-        //Create deffinition for the arrow markers showing relationship directions
-        g.append("defs").append("marker")
-            .attr("id", "arrow")
-            .attr("viewBox", "0 -3 10 10")
-            .attr("refX", 20)
-            .attr("refY", 0)
-            .attr("markerWidth", 8)
-            .attr("markerHeight", 8)
-            .attr("orient", "auto")
-            .append("svg:path")
-            .attr("d", "M0,-5L10,0L0,5");        
-
-        link = g.append("g")
+        /* link = g.append("g")
             .attr("class", "links")
             .selectAll("line")
-            .data(links)
+            .data(curChain)
             .enter().append("line")
-            .attr("stroke", function(d) { return d3.color("#000000"); })
-            .attr("marker-end", "url(#arrow)");
+            .attr("stroke", function(d) { return d3.color("#FF0000"); })
+            .attr("marker-end", "url(#arrow)"); */
 
-        node = g.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(nodes)
-            .enter()
-            .append("circle")
-            .on("mouseover", function(d) {
-                mouseOver(d.id);
-            })
-            .on("mouseout", function(d) {
-                mouseOut(d.id);
-            })
-            .attr("id", function(d) {
-                console.log(d.id);
-                return d.id;
-            })
-            .attr("r", 10)
-            .attr("fill", function(d) { 
-                console.log(d);
-                /* if (d.sourceOnly) return d3.color("#0000FF"); */
-                return d3.color("#FFFF2F"); })
-            .style("stroke", function(d) { 
-                /* if (d.sourceOnly) return d3.color("#000080"); */
-                return d3.color("#FF8D2F"); 
-            });
-
-        //add drag capabilities  
-        drag_handler = d3.drag()
-            .on("start", drag_start)
-            .on("drag", drag_drag)
-            .on("end", drag_end);	
-
-        drag_handler(node);
-
-        text = g.append("g").attr("class", "labels").selectAll("g") 
-            .data(nodes)
-            .enter().append("g")
-            .append("text")
-            .attr("x", 14)
-            .attr("y", ".31em")
-            .style("font-family", "sans-serif")
-            .style("font-size", "0.7em")
-            .text(function (d) { return d.stmt; });
-
-        node.on("click", function (d) {
-            //d3.event.stopImmediatePropagation();
-            //self.onNodeClicked.emit(d.id);
-            d3.json("json/a(with dug).json")
-            .then(function(data){
-                renderCfg(data, d.id);
-            });
-            
-        });
-
-        function mouseOver(nid) {
-            console.log(node.selectAll('#'+nid));
-            node.selectAll('#'+nid)
-            .attr("fill", function(){
-                return d3.color("#0000FF");
-            });
-            node.selectAll('#'+nid)
-            .attr("stroke", function(){
-                return d3.color("#000080");
-            });
-        }
-
-        function mouseOut(nid) {
-            node.selectAll('#'+nid)
-            .attr("fill", function(){
-                return d3.color("#FFFF2F");
-            });
-            node.selectAll('#'+nid)
-            .attr("stroke", function(){
-                return d3.color("#FF8D2F");
-            });
-        }
-
-        /* node.on("mouseover", function (d) {
-            // 호버 시, 노드 색상 변환
-
-            console.log(node.select('#'+d.id));
-
-            //node.selectAll(d.id)
-            //d3.select('this').select('circle').attr("fill", function(){
-            node.selectAll("circle")
-            .attr("fill", function(){
-                return d3.color("#0000FF");
-            });
-
-            //d3.select('this').select('circle').attr("fill", function(){
-            node.selectAll("circle")
-            .attr("stroke", function(){
-                return d3.color("#000080");
-            });
-        });
-
-        node.on("mouseout", function (d) {
-            // 호버 종료 시, 노드 색상 변환
-            //d3.select('this').select('circle').attr("fill", function(){
-            node.selectAll("circle")
-            .attr("fill", function(){
-                return d3.color("#FFFF2F");
-            });
-
-            //d3.select('this').select('circle').attr("fill", function(){
-            node.selectAll("circle")
-            .attr("stroke", function(){
-                return d3.color("#FF8D2F");
-            });
-        }); */
-
-        node.append("title")
-            .text(function (d) { return d.id + ":" + d.stmt; });
-        
-        min_zoom = 0.1;
-        max_zoom = 7;
-
-        //add zoom capabilities 
-        zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
-            .on("zoom", zoom_actions);
-
-        zoom_handler(svg); 
-
-        //Drag functions 
-        //d is the node 
-        function drag_start(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-        
-        //make sure you can't drag the circle outside the box
-        function drag_drag(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-        
-        function drag_end(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-        
-        //Zoom functions 
-        function zoom_actions(){
-            g.attr("transform", d3.event.transform)
-        }
-
-        function ticked() {
-            //update circle positions each tick of the simulation 
-            node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
-                
-            //update link positions 
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
-
-            text
-                .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
-        }
-    
     }
-
 
     let renderCfg = function(data, cid){
 
@@ -472,6 +284,8 @@
             nodes = graph2nodes(graph);
         }
         links = graph2links(graph)
+        let duLst = getDugChain(data, cid);
+        links = links.concat(duLst);
 
         simulation = d3.forceSimulation()
             .nodes(nodes);                          
@@ -480,12 +294,9 @@
             .force("charge_force", d3.forceManyBody().strength(-100))    
             .force("center_force", d3.forceCenter(width / 2, height / 2))
             .force("links", d3.forceLink(links).id(function (d) { 
-                console.log(d.id);
                 return d.id; }))            
             .force("collide", d3.forceCollide().radius(2))
             ;         
-
-        console.log("test2");
 
         simulation
             .on("tick", ticked);

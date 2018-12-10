@@ -1,0 +1,341 @@
+digraph finduser {
+{
+node [shape=box]
+607[label="607: skip"]
+606[label="606: skip"]
+605[label="605: skip"]
+604[label="604: skip"]
+603[label="603: skip"]
+602[label="602: skip"]
+601[label="601: skip"]
+600[label="600: skip"]
+599[label="599: skip"]
+598[label="598: skip"]
+597[label="597: pw:= call(@getpwent, ())" style=filled color=grey]
+596[label="596: set(*fuzzyp,(enum bool )1)"]
+595[label="595: tmp___2:= call(@strcasecmp, ((char const   *)StartOf(buf), (char const   *)name))" style=filled color=grey]
+594[label="594: tmp___1:= call(@strchr, ((char const   *)StartOf(buf), \\' \\'))" style=filled color=grey]
+593[label="593: call(@buildfname(*pw.pw_gecos, *pw.pw_name, StartOf(buf)))" style=filled color=grey]
+592[label="592: pw:= call(@getpwent, ())" style=filled color=grey]
+591[label="591: call(@setpwent())" style=filled color=grey]
+590[label="590: set(p,p+1)"]
+589[label="589: set(*p,(char )\\' \\')"]
+588[label="588: set(*p,(char )\\' \\')"]
+587[label="587: set(p,name)"]
+586[label="586: set(*fuzzyp,(enum bool )1)"]
+585[label="585: pw:= call(@getpwnam, ((char const   *)name))" style=filled color=grey]
+584[label="584: set(p,p+1)"]
+583[label="583: set(tryagain,(enum bool )1)"]
+582[label="582: set(*p,(char )tmp)"]
+581[label="581: tmp:= call(@tolower, ((int )*p))" style=filled color=grey]
+580[label="580: tmp___0:= call(@__ctype_b_loc, ())" style=filled color=grey]
+579[label="579: set(p,name)"]
+578[label="578: set(tryagain,(enum bool )0)"]
+577[label="577: pw:= call(@getpwnam, ((char const   *)name))" style=filled color=grey]
+576[label="576: set(*fuzzyp,(enum bool )0)"]
+575[label="575: assume(!tmp___2)"]
+574[label="574: assume(!(!tmp___2))"]
+573[label="573: assume(((unsigned long )tmp___1)!=((unsigned long )((void *)0)))"]
+572[label="572: assume(!(((unsigned long )tmp___1)!=((unsigned long )((void *)0))))"]
+571[label="571: assume(!(((unsigned long )pw)!=((unsigned long )((void *)0))))"]
+570[label="570: assume(!(!(((unsigned long )pw)!=((unsigned long )((void *)0)))))"]
+569[label="569: assume(((int )*p)==95)"]
+568[label="568: assume(!(((int )*p)==95))"]
+567[label="567: assume(((int )*p)==(((int )@SpaceSub)&127))"]
+566[label="566: assume(!(((int )*p)==(((int )@SpaceSub)&127)))"]
+565[label="565: assume(!(((int )*p)!=0))"]
+564[label="564: assume(!(!(((int )*p)!=0)))"]
+563[label="563: assume(!@MatchGecos)"]
+562[label="562: assume(!(!@MatchGecos))"]
+561[label="561: assume(((unsigned long )pw)!=((unsigned long )((void *)0)))"]
+560[label="560: assume(!(((unsigned long )pw)!=((unsigned long )((void *)0))))"]
+559[label="559: assume(tryagain)"]
+558[label="558: assume(!tryagain)"]
+557[label="557: assume(((int const   )*(*tmp___0+((int )*p)))&256)"]
+556[label="556: assume(!(((int const   )*(*tmp___0+((int )*p)))&256))"]
+555[label="555: assume((((int )*p)&-128)==0)"]
+554[label="554: assume(!((((int )*p)&-128)==0))"]
+553[label="553: assume(!(((int )*p)!=0))"]
+552[label="552: assume(!(!(((int )*p)!=0)))"]
+551[label="551: assume(((unsigned long )pw)!=((unsigned long )((void *)0)))"]
+550[label="550: assume(!(((unsigned long )pw)!=((unsigned long )((void *)0))))"]
+549[label="549: set(buf,(char *)__cil_tmp12)"]
+548[label="548: alloc(__cil_tmp12,[SizeOf(char )*5])"]
+502[label="502: return (struct passwd *)((void *)0)"]
+501[label="501: skip"]
+496[label="496: skip"]
+495[label="495: return pw"]
+493[label="493: skip"]
+489[label="489: skip"]
+482[label="482: skip"]
+479[label="479: skip"]
+471[label="471: skip"]
+466[label="466: skip"]
+464[label="464: skip"]
+462[label="462: skip"]
+459[label="459: skip"]
+454[label="454: return (struct passwd *)((void *)0)"]
+453[label="453: skip"]
+452[label="452: return pw"]
+450[label="450: skip"]
+449[label="449: skip"]
+446[label="446: skip"]
+437[label="437: skip"]
+433[label="433: skip"]
+431[label="431: skip"]
+428[label="428: skip"]
+423[label="423: return pw"]
+422[label="422: skip"]
+EXIT[label="EXIT: skip"]
+ENTRY[label="ENTRY: skip"]
+}
+607 -> 479
+606 -> 493
+605 -> 489
+604 -> 594
+603 -> 479
+602 -> 592
+601 -> 449
+600 -> 582
+599 -> 437
+598 -> 422
+597 -> 607
+596 -> 495
+595 -> 606
+594 -> 605
+593 -> 604
+592 -> 603
+591 -> 602
+590 -> 459
+589 -> 590
+588 -> 590
+587 -> 459
+586 -> 452
+585 -> 601
+584 -> 428
+583 -> 584
+582 -> 583
+581 -> 600
+580 -> 599
+579 -> 428
+578 -> 579
+577 -> 598
+576 -> 577
+575 -> 596
+574 -> 496
+573 -> 595
+572 -> 496
+571 -> 501
+570 -> 593
+569 -> 589
+568 -> 590
+567 -> 588
+566 -> 466
+565 -> 471
+564 -> 464
+563 -> 454
+562 -> 587
+561 -> 586
+560 -> 453
+559 -> 450
+558 -> 453
+557 -> 581
+556 -> 584
+555 -> 580
+554 -> 584
+553 -> 446
+552 -> 433
+551 -> 423
+550 -> 578
+549 -> 576
+548 -> 549
+502 -> EXIT
+501 -> 502
+496 -> 597
+495 -> EXIT
+493 -> 575
+493 -> 574
+489 -> 573
+489 -> 572
+482 -> 571
+482 -> 570
+479 -> 482
+471 -> 591
+466 -> 569
+466 -> 568
+464 -> 567
+464 -> 566
+462 -> 565
+462 -> 564
+459 -> 462
+454 -> EXIT
+453 -> 563
+453 -> 562
+452 -> EXIT
+450 -> 561
+450 -> 560
+449 -> 559
+449 -> 558
+446 -> 585
+437 -> 557
+437 -> 556
+433 -> 555
+433 -> 554
+431 -> 553
+431 -> 552
+428 -> 431
+423 -> EXIT
+422 -> 551
+422 -> 550
+ENTRY -> 548
+604 -> 479 [label="(buildfname,login),(buildfname,gecos),(buildfname,buf)," color=red]
+604 -> EXIT [label="(buildfname,login),(buildfname,gecos),(buildfname,buf)," color=red]
+597 -> 607 [label="__extern__getpwent,(finduser,pw)," color=red]
+597 -> 479 [label="__extern__getpwent,(finduser,pw)," color=red]
+596 -> EXIT [label="(recipient,fuzzy)," color=red]
+595 -> 606 [label="(finduser,tmp___2)," color=red]
+595 -> 575 [label="(finduser,tmp___2)," color=red]
+595 -> 574 [label="(finduser,tmp___2)," color=red]
+594 -> 605 [label="(finduser,tmp___1)," color=red]
+594 -> 573 [label="(finduser,tmp___1)," color=red]
+594 -> 572 [label="(finduser,tmp___1)," color=red]
+593 -> 604 [label="(buildfname,login),(buildfname,gecos),(buildfname,buf)," color=red]
+592 -> 603 [label="__extern__getpwent,(finduser,pw)," color=red]
+592 -> 479 [label="__extern__getpwent,(finduser,pw)," color=red]
+590 -> 459 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+589 -> 590 [label="xalloc-2420,recipient-4180," color=red]
+588 -> 590 [label="xalloc-2420,recipient-4180," color=red]
+587 -> 459 [label="(finduser,p)," color=red]
+586 -> EXIT [label="(recipient,fuzzy)," color=red]
+585 -> 601 [label="__extern__getpwnam,(finduser,pw)," color=red]
+585 -> 561 [label="(finduser,pw)," color=red]
+585 -> 560 [label="(finduser,pw)," color=red]
+585 -> 453 [label="(finduser,pw)," color=red]
+585 -> EXIT [label="__extern__getpwnam," color=red]
+584 -> 428 [label="__extern____ctype_b_loc,xalloc-2420,recipient-4180,(finduser,tryagain),(finduser,tmp___0),(finduser,tmp),(finduser,p)," color=red]
+583 -> 584 [label="(finduser,tryagain)," color=red]
+582 -> 584 [label="xalloc-2420,recipient-4180," color=red]
+581 -> 600 [label="(finduser,tmp)," color=red]
+581 -> 584 [label="(finduser,tmp)," color=red]
+581 -> 582 [label="(finduser,tmp)," color=red]
+580 -> 599 [label="__extern____ctype_b_loc,(finduser,tmp___0)," color=red]
+580 -> 584 [label="__extern____ctype_b_loc,(finduser,tmp___0)," color=red]
+580 -> 557 [label="__extern____ctype_b_loc,(finduser,tmp___0)," color=red]
+580 -> 556 [label="__extern____ctype_b_loc,(finduser,tmp___0)," color=red]
+579 -> 428 [label="(finduser,p)," color=red]
+578 -> 428 [label="(finduser,tryagain)," color=red]
+577 -> 598 [label="__extern__getpwnam,(finduser,pw)," color=red]
+577 -> 585 [label="__extern__getpwnam," color=red]
+577 -> 551 [label="(finduser,pw)," color=red]
+577 -> 550 [label="(finduser,pw)," color=red]
+577 -> EXIT [label="__extern__getpwnam," color=red]
+576 -> EXIT [label="(recipient,fuzzy)," color=red]
+575 -> 495 [label="(finduser,tmp___2)," color=red]
+574 -> 496 [label="(finduser,tmp___2)," color=red]
+573 -> 496 [label="(finduser,tmp___1)," color=red]
+573 -> 495 [label="(finduser,tmp___1)," color=red]
+572 -> 496 [label="(finduser,tmp___1)," color=red]
+571 -> 502 [label="(finduser,pw)," color=red]
+570 -> 597 [label="(finduser,pw)," color=red]
+570 -> 593 [label="(finduser,pw)," color=red]
+570 -> 495 [label="(finduser,pw)," color=red]
+563 -> EXIT [label="MatchGecos," color=red]
+562 -> EXIT [label="MatchGecos," color=red]
+561 -> 452 [label="(finduser,pw)," color=red]
+560 -> 453 [label="(finduser,pw)," color=red]
+559 -> 453 [label="(finduser,tryagain)," color=red]
+559 -> 452 [label="(finduser,tryagain)," color=red]
+558 -> 453 [label="(finduser,tryagain)," color=red]
+551 -> 423 [label="(finduser,pw)," color=red]
+550 -> 585 [label="(finduser,pw)," color=red]
+549 -> 595 [label="(finduser,buf)," color=red]
+549 -> 594 [label="(finduser,buf)," color=red]
+549 -> 593 [label="(finduser,buf)," color=red]
+549 -> 502 [label="(finduser,buf)," color=red]
+549 -> 495 [label="(finduser,buf)," color=red]
+549 -> 454 [label="(finduser,buf)," color=red]
+549 -> 452 [label="(finduser,buf)," color=red]
+549 -> 423 [label="(finduser,buf)," color=red]
+548 -> 549 [label="(finduser,__cil_tmp12)," color=red]
+548 -> 502 [label="(finduser,__cil_tmp12)," color=red]
+548 -> 495 [label="(finduser,__cil_tmp12)," color=red]
+548 -> 454 [label="(finduser,__cil_tmp12)," color=red]
+548 -> 452 [label="(finduser,__cil_tmp12)," color=red]
+548 -> 423 [label="(finduser,__cil_tmp12)," color=red]
+502 -> EXIT [label="(recipient,pw),(finduser,tryagain),(finduser,tmp___2),(finduser,tmp___1),(finduser,tmp___0),(finduser,tmp),(finduser,pw),(finduser,p),(finduser,name),(finduser,fuzzyp),(finduser,buf),(finduser,__cil_tmp12)," color=red]
+496 -> 479 [label="(finduser,tmp___2),(finduser,tmp___1)," color=red]
+495 -> EXIT [label="(recipient,pw),(finduser,tryagain),(finduser,tmp___2),(finduser,tmp___1),(finduser,tmp___0),(finduser,tmp),(finduser,pw),(finduser,p),(finduser,name),(finduser,fuzzyp),(finduser,buf),(finduser,__cil_tmp12)," color=red]
+479 -> 597 [label="__extern__getpwent," color=red]
+479 -> 595 [label="(finduser,tmp___2)," color=red]
+479 -> 594 [label="(finduser,tmp___1)," color=red]
+479 -> 593 [label="(buildfname,login),(buildfname,gecos),(buildfname,buf)," color=red]
+479 -> 571 [label="(finduser,pw)," color=red]
+479 -> 570 [label="(finduser,pw)," color=red]
+479 -> 502 [label="(finduser,tmp___2),(finduser,tmp___1)," color=red]
+479 -> 496 [label="(finduser,tmp___2)," color=red]
+479 -> EXIT [label="__extern__getpwent,(buildfname,login),(buildfname,gecos),(buildfname,buf)," color=red]
+459 -> 590 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 589 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 588 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 569 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 568 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 567 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 566 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 565 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 564 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+459 -> 502 [label="(finduser,p)," color=red]
+459 -> 495 [label="(finduser,p)," color=red]
+459 -> EXIT [label="xalloc-2420,recipient-4180," color=red]
+454 -> EXIT [label="(recipient,pw),(finduser,tryagain),(finduser,tmp___2),(finduser,tmp___1),(finduser,tmp___0),(finduser,tmp),(finduser,pw),(finduser,p),(finduser,name),(finduser,fuzzyp),(finduser,buf),(finduser,__cil_tmp12)," color=red]
+453 -> 592 [label="(finduser,pw)," color=red]
+453 -> 502 [label="(finduser,tryagain)," color=red]
+453 -> 495 [label="(finduser,tryagain)," color=red]
+453 -> 454 [label="(finduser,tryagain),(finduser,pw)," color=red]
+452 -> EXIT [label="(recipient,pw),(finduser,tryagain),(finduser,tmp___2),(finduser,tmp___1),(finduser,tmp___0),(finduser,tmp),(finduser,pw),(finduser,p),(finduser,name),(finduser,fuzzyp),(finduser,buf),(finduser,__cil_tmp12)," color=red]
+428 -> 587 [label="(finduser,p)," color=red]
+428 -> 584 [label="__extern____ctype_b_loc,xalloc-2420,recipient-4180,(finduser,tryagain),(finduser,tmp___0),(finduser,tmp),(finduser,p)," color=red]
+428 -> 583 [label="(finduser,tryagain)," color=red]
+428 -> 582 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+428 -> 581 [label="xalloc-2420,recipient-4180,(finduser,tmp),(finduser,p)," color=red]
+428 -> 580 [label="__extern____ctype_b_loc,(finduser,tmp___0)," color=red]
+428 -> 559 [label="(finduser,tryagain)," color=red]
+428 -> 558 [label="(finduser,tryagain)," color=red]
+428 -> 557 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+428 -> 556 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+428 -> 555 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+428 -> 554 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+428 -> 553 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+428 -> 552 [label="xalloc-2420,recipient-4180,(finduser,p)," color=red]
+428 -> 502 [label="(finduser,tmp___0),(finduser,tmp)," color=red]
+428 -> 495 [label="(finduser,tmp___0),(finduser,tmp)," color=red]
+428 -> 459 [label="xalloc-2420,recipient-4180," color=red]
+428 -> 454 [label="(finduser,tmp___0),(finduser,tmp),(finduser,p)," color=red]
+428 -> 452 [label="(finduser,tmp___0),(finduser,tmp),(finduser,p)," color=red]
+428 -> EXIT [label="__extern____ctype_b_loc,xalloc-2420,recipient-4180," color=red]
+423 -> EXIT [label="(recipient,pw),(finduser,tryagain),(finduser,tmp___2),(finduser,tmp___1),(finduser,tmp___0),(finduser,tmp),(finduser,pw),(finduser,p),(finduser,name),(finduser,fuzzyp),(finduser,buf),(finduser,__cil_tmp12)," color=red]
+ENTRY -> 596 [label="(finduser,fuzzyp)," color=red]
+ENTRY -> 595 [label="(finduser,name)," color=red]
+ENTRY -> 593 [label="__extern__getpwnam.pw_name,__extern__getpwnam.pw_gecos,__extern__getpwent.pw_name,__extern__getpwent.pw_gecos,buildfname," color=red]
+ENTRY -> 592 [label="__extern__getpwent," color=red]
+ENTRY -> 587 [label="(finduser,name)," color=red]
+ENTRY -> 586 [label="(finduser,fuzzyp)," color=red]
+ENTRY -> 585 [label="(finduser,name)," color=red]
+ENTRY -> 579 [label="(finduser,p),(finduser,name)," color=red]
+ENTRY -> 578 [label="(finduser,tryagain)," color=red]
+ENTRY -> 577 [label="__extern__getpwnam,(finduser,pw),(finduser,name)," color=red]
+ENTRY -> 576 [label="(finduser,fuzzyp)," color=red]
+ENTRY -> 567 [label="SpaceSub," color=red]
+ENTRY -> 566 [label="SpaceSub," color=red]
+ENTRY -> 563 [label="MatchGecos," color=red]
+ENTRY -> 562 [label="MatchGecos," color=red]
+ENTRY -> 549 [label="(finduser,buf)," color=red]
+ENTRY -> 548 [label="(finduser,__cil_tmp12)," color=red]
+ENTRY -> 502 [label="(recipient,pw),(finduser,name),(finduser,fuzzyp)," color=red]
+ENTRY -> 495 [label="(recipient,pw),(finduser,name),(finduser,fuzzyp)," color=red]
+ENTRY -> 479 [label="(finduser,tmp___2),(finduser,tmp___1),(buildfname,login),(buildfname,gecos),(buildfname,buf)," color=red]
+ENTRY -> 454 [label="(recipient,pw),(finduser,tmp___2),(finduser,tmp___1),(finduser,name),(finduser,fuzzyp)," color=red]
+ENTRY -> 452 [label="(recipient,pw),(finduser,tmp___2),(finduser,tmp___1),(finduser,name),(finduser,fuzzyp)," color=red]
+ENTRY -> 428 [label="__extern____ctype_b_loc,xalloc-2420,recipient-4180,(finduser,tmp___0),(finduser,tmp)," color=red]
+ENTRY -> 423 [label="(recipient,pw),(finduser,tryagain),(finduser,tmp___2),(finduser,tmp___1),(finduser,tmp___0),(finduser,tmp),(finduser,p),(finduser,name),(finduser,fuzzyp)," color=red]
+ENTRY -> EXIT [label="__extern__getpwent,__extern____ctype_b_loc,xalloc-2420,recipient-4180,(buildfname,login),(buildfname,gecos),(buildfname,buf),MatchGecos," color=red]
+}
