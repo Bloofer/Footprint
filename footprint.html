@@ -15,6 +15,12 @@
         border-color: #ccc; 
         height: 790px;
     }
+    #arrow0 {
+        fill: #000000;
+    } 
+    #arrow1 {
+        fill: #FF0000;
+    }
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -324,8 +330,14 @@
             .selectAll("line")
             .data(links)
             .enter().append("line")
-            .attr("stroke", function(d) { return d3.color("#000000"); })
+            .attr("class", function(d) {
+                if(d.text === "") return "arrow0";
+                else return "arrow1"; })
+            .attr("stroke", function(d) { 
+                if(d.text === "") return d3.color("#000000");
+                else return d3.color("#FF0000"); })
             .attr("marker-end", "url(#arrow)");
+            //#arrow" + d["value"] + "
 
         node = g.append("g")
             .attr("class", "nodes")
@@ -378,8 +390,8 @@
         node.append("title")
             .text(function (d) { return d.id + ":" + d.stmt; });
         
-        min_zoom = 0.1;
-        max_zoom = 7;
+        min_zoom = 0.5;
+        max_zoom = 5;
 
         //add zoom capabilities 
         zoom_handler = d3.zoom().scaleExtent([min_zoom,max_zoom])
