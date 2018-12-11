@@ -104,13 +104,13 @@
                 <span>Debug Options</span>
               </h6>
               <li class="nav-item">
-                <span class="nav-link">
-                  <input type="checkbox" />&nbsp;&nbsp;Def-Use
+                <span class="nav-link" style="margin-bottom:-10px;">
+                  <label><input id="dugchk" type="checkbox" onclick="toggleDug()" />&nbsp;&nbsp;Def-Use</label>
                 </span>
               </li>
               <li class="nav-item">
                 <span class="nav-link">
-                  <input type="checkbox" />&nbsp;&nbsp;Rank
+                  <label><input type="checkbox" />&nbsp;&nbsp;Rank</label>
                 </span>
               </li>
             </ul>
@@ -132,9 +132,12 @@
                 <button id="home" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="home"></span></button>
                 <button id="zoom_in" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="plus"></span></button>
                 <button id="zoom_out" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="minus"></span></button>
-                <div style="float:right; border-radius:4px; background-color:#eee; border-color:#ccc; border-style:solid; border-width:1px; width:130px; height:50px; margin-top:15px; padding-left:5px;">
+                <div id="dugon" style="float:right; border-radius:4px; background-color:#eee; border-color:#ccc; border-style:solid; border-width:1px; width:130px; height:50px; margin-top:15px; padding-left:5px; display:none;">
                     <span data-feather="arrow-right"></span>&nbsp;Control Flow</br>
                     <span data-feather="arrow-right" style="color:red;"></span>&nbsp;<span style="color:red;">Def-Use Chain</span>
+                </div>
+                <div id="dugoff" style="float:right; border-radius:4px; background-color:#eee; border-color:#ccc; border-style:solid; border-width:1px; width:130px; height:28px; margin-top:15px; padding-left:5px; display:inline;">
+                    <span data-feather="arrow-right"></span>&nbsp;Control Flow</br>
                 </div>
             </div>
             <div class="col-md-6" id="log">
@@ -223,12 +226,14 @@
 
     let svg = d3.selectAll("#cfg").append("svg")
       .attr("width", "100%")
-      .attr("height", "800px");
+      .attr("height", "720px");
+
+    let dugOn; // Def-Use 토글 옵션 체크박스
 
     d3.json("json/a(with dug).json")
         .then(function(data){
             // 초기 데이터 엔트리
-            renderCfg(data, "cg");
+            renderCfg(data, "cg", false);
         });
 
     // CFG 그래프 렌더링 용 변수들
@@ -276,13 +281,11 @@
 
     }
 
-    let renderCfg = function(data, cid){
+    let renderCfg = function(data, cid, dugbtn){
 
         cfgStatus = cid; // 해당 선택된 CFG 렌더링
 
         d3.selectAll("g").remove().exit().data(data);
-
-        console.log("test1");
 
         cfgs = getCfgNames(data);
         if(cid === "cg") {
@@ -293,8 +296,10 @@
             nodes = graph2nodes(graph);
         }
         links = graph2links(graph)
-        let duLst = getDugChain(data, cid);
-        links = links.concat(duLst);
+        if(dugbtn === true){
+            let duLst = getDugChain(data, cid);
+            links = links.concat(duLst);
+        }
 
         simulation = d3.forceSimulation()
             .nodes(nodes);                          
@@ -374,14 +379,15 @@
             .attr("y", ".31em")
             .style("font-family", "sans-serif")
             .style("font-size", "0.7em")
-            .text(function (d) { return d.stmt; });
+            .text(function (d) { return d.id + ":" + d.stmt; });
 
         node.on("click", function (d) {
             
             if(hasCfgName(cfgs, d.id)){
+                let dugOn = document.getElementById("dugchk");
                 d3.json("json/a(with dug).json")
                 .then(function(data){
-                    renderCfg(data, d.id);
+                    renderCfg(data, d.id, dugOn.checked);
                 });
             } else {
                 d3.event.stopImmediatePropagation();
@@ -443,7 +449,9 @@
             link.attr("d", function(d) {
                 var dx = d.target.x - d.source.x,
                     dy = d.target.y - d.source.y,
-                    dr = 75;  //linknum is defined above
+                    dr;  //linknum is defined above
+                    if(d.text === "") dr = 0;
+                    else dr = 50;
                 return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
             });
 
@@ -457,15 +465,18 @@
     document.getElementById("home").onclick = function() {
         // 초기 CallGraph 렌더링하기
 
-        cfgStatus = "cg";
+        cfgStatus = "cg";        
+        dugOn = document.getElementById("dugchk");
 
         d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
-                renderCfg(data, "cg");
+                renderCfg(data, "cg", dugOn.checked);
             });
 
     };
+
+    // HTML 패널 이벤트 관련 함수들
 
     function changeTab(evt, tabName) {
         // Declare all variables
@@ -486,6 +497,35 @@
         // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
+    }
+
+    function toggleDug() {
+        // 체크박스 확인해서 텍스트 박스 켜고 끔
+        dugOn = document.getElementById("dugchk");
+        let dugOnTxt = document.getElementById("dugon");
+        let dugOffTxt = document.getElementById("dugoff");
+
+        if (dugOn.checked == true){
+            dugOnTxt.style.display = "inline";
+            dugOffTxt.style.display = "none";
+
+            d3.json("json/a(with dug).json")
+            .then(function(data){
+                d3.selectAll("g").remove().exit().data(data);
+                renderCfg(data, cfgStatus, true);
+            });
+
+        } else {
+            dugOnTxt.style.display = "none";
+            dugOffTxt.style.display = "inline";
+
+            d3.json("json/a(with dug).json")
+            .then(function(data){
+                d3.selectAll("g").remove().exit().data(data);
+                renderCfg(data, cfgStatus, false);
+            });
+
+        }
     }
 
     </script>
