@@ -86,13 +86,19 @@
                 <span>Vis Options</span>
               </h6>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a id="graphrender" class="nav-link" href="#">
                   <span data-feather="bar-chart-2"></span>
                   Render Graph
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a id="readalarm" class="nav-link" href="#">
+                  <span data-feather="check"></span>
+                  Read Alarm 
+                </a>
+              </li>
+              <li class="nav-item">
+                <a id="viewlog" class="nav-link" href="#">
                     <span data-feather="file"></span>
                     View All Log
                 </a>
@@ -117,8 +123,8 @@
           </div>
         </nav>
 
-        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 pt-3 px-4" style="margin-left:-15px;">
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom" style="margin-left:-15px;">
             <div class="col-md-6">
               <h1 class="h2">CFG Panel</h1>
             </div>
@@ -462,6 +468,28 @@
 
     }
 
+    document.getElementById("viewlog").onclick = function() {
+        changeTab(window.event, 'ltab');
+    };
+
+    document.getElementById("readalarm").onclick = function() {
+        changeTab(window.event, 'atab');
+    };
+
+    document.getElementById("graphrender").onclick = function() {
+        // 초기 CallGraph 렌더링하기
+
+        cfgStatus = "cg";        
+        dugOn = document.getElementById("dugchk");
+
+        d3.json("json/a(with dug).json")
+            .then(function(data){
+                d3.selectAll("g").remove().exit().data(data);
+                renderCfg(data, "cg", dugOn.checked);
+            });
+
+    };
+
     document.getElementById("home").onclick = function() {
         // 초기 CallGraph 렌더링하기
 
@@ -477,24 +505,19 @@
     };
 
     // HTML 패널 이벤트 관련 함수들
-
     function changeTab(evt, tabName) {
-        // Declare all variables
         var i, tabcontent, tablinks;
 
-        // Get all elements with class="tabcontent" and hide them
         tabcontent = document.getElementsByClassName("tabcontent");
         for (i = 0; i < tabcontent.length; i++) {
             tabcontent[i].style.display = "none";
         }
 
-        // Get all elements with class="tablinks" and remove the class "active"
         tablinks = document.getElementsByClassName("tablinks");
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].className = tablinks[i].className.replace(" active", "");
         }
 
-        // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
     }
