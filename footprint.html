@@ -23,6 +23,12 @@
         fill:none;
         stroke:red;
     }
+    #arrow0 {
+        fill:black;
+    }
+    #arrow1 {
+        fill:red;
+    }
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -329,7 +335,18 @@
 
         //Create deffinition for the arrow markers showing relationship directions
         g.append("defs").append("marker")
-            .attr("id", "arrow")
+            .attr("id", "arrow0")
+            .attr("viewBox", "0 -3 10 10")
+            .attr("refX", 20)
+            .attr("refY", 0)
+            .attr("markerWidth", 8)
+            .attr("markerHeight", 8)
+            .attr("orient", "auto")
+            .append("svg:path")
+            .attr("d", "M0,-5L10,0L0,5");        
+
+        g.append("defs").append("marker")
+            .attr("id", "arrow1")
             .attr("viewBox", "0 -3 10 10")
             .attr("refX", 20)
             .attr("refY", 0)
@@ -350,7 +367,9 @@
             .attr("stroke", function(d) { 
                 if(d.text === "") return d3.color("#000000");
                 else return d3.color("#FF0000"); })
-            .attr("marker-end", "url(#arrow)");
+            .attr("marker-end", function(d) { 
+                if(d.text === "") return "url(#arrow0)";
+                else return "url(#arrow1)"; });
             //#arrow" + d["value"] + "
 
         node = g.append("g")
