@@ -15,11 +15,13 @@
         border-color: #ccc; 
         height: 790px;
     }
-    #arrow0 {
-        fill: #000000;
+    .arrow0 {
+        fill:none;
+        stroke:black;
     } 
-    #arrow1 {
-        fill: #FF0000;
+    .arrow1 {
+        fill:none;
+        stroke:red;
     }
     </style>
     <meta charset="utf-8">
@@ -130,6 +132,10 @@
                 <button id="home" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="home"></span></button>
                 <button id="zoom_in" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="plus"></span></button>
                 <button id="zoom_out" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="minus"></span></button>
+                <div style="float:right; border-radius:4px; background-color:#eee; border-color:#ccc; border-style:solid; border-width:1px; width:130px; height:50px; margin-top:15px; padding-left:5px;">
+                    <span data-feather="arrow-right"></span>&nbsp;Control Flow</br>
+                    <span data-feather="arrow-right" style="color:red;"></span>&nbsp;<span style="color:red;">Def-Use Chain</span>
+                </div>
             </div>
             <div class="col-md-6" id="log">
               <div class="tab" style="height:40px;">
@@ -221,11 +227,8 @@
 
     d3.json("json/a(with dug).json")
         .then(function(data){
-
             // 초기 데이터 엔트리
-
             renderCfg(data, "cg");
-
         });
 
     // CFG 그래프 렌더링 용 변수들
@@ -265,9 +268,9 @@
 
         /* link = g.append("g")
             .attr("class", "links")
-            .selectAll("line")
+            .selectAll("path")
             .data(curChain)
-            .enter().append("line")
+            .enter().append("path")
             .attr("stroke", function(d) { return d3.color("#FF0000"); })
             .attr("marker-end", "url(#arrow)"); */
 
@@ -327,9 +330,9 @@
 
         link = g.append("g")
             .attr("class", "links")
-            .selectAll("line")
+            .selectAll("path")
             .data(links)
-            .enter().append("line")
+            .enter().append("path")
             .attr("class", function(d) {
                 if(d.text === "") return "arrow0";
                 else return "arrow1"; })
@@ -431,11 +434,18 @@
                 .attr("cy", function(d) { return d.y; });
                 
             //update link positions 
-            link
+            /* link
                 .attr("x1", function(d) { return d.source.x; })
                 .attr("y1", function(d) { return d.source.y; })
                 .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
+                .attr("y2", function(d) { return d.target.y; }); */
+
+            link.attr("d", function(d) {
+                var dx = d.target.x - d.source.x,
+                    dy = d.target.y - d.source.y,
+                    dr = 75;  //linknum is defined above
+                return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+            });
 
             text
                 .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
