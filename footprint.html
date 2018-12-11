@@ -73,7 +73,8 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-1 mr-0" href="#">Footprint v0.1</a>
+      <img width="40px" style="float:left; margin-left:10px;" src="asset/image/footprint.png">
+      <a class="navbar-brand col-sm-3 col-md-1 mr-0" style="float:left; padding-left:4px;" href="#">Footprint</a>
       <div class="form-control form-control-dark w-100 p-0"></div>
     </nav>
 
@@ -242,7 +243,7 @@
 
     let dugOn; // Def-Use 토글 옵션 체크박스
 
-    d3.json("json/a(with dug).json")
+    d3.json("demo/long/a.json")
         .then(function(data){
             // 초기 데이터 엔트리
             renderCfg(data, "cg", false);
@@ -267,12 +268,10 @@
     let zoom_handler;
 
     let getDugChain = function(data, cid){
-
         let dugChain = data["dugraph"]["edges"];
-
         let curChain = [];
         for(i in dugChain){
-            if(dugChain[i][0].substring(0, cid.length) === cid){
+            if(dugChain[i][0].substring(0, cid.length) === cid && dugChain[i][1].substring(0, cid.length) === cid){
             // DUG 체인이 현재 렌더링된 그래프에 해당될 때
                 let src = dugChain[i][0].substring(dugChain[i][0].indexOf('\-')+1);
                 let tgt = dugChain[i][1].substring(dugChain[i][1].indexOf('\-')+1);
@@ -280,17 +279,7 @@
                 curChain.push({"source":src, "target":tgt, "text":txt});
             }
         }
-
         return curChain;
-
-        /* link = g.append("g")
-            .attr("class", "links")
-            .selectAll("path")
-            .data(curChain)
-            .enter().append("path")
-            .attr("stroke", function(d) { return d3.color("#FF0000"); })
-            .attr("marker-end", "url(#arrow)"); */
-
     }
 
     let renderCfg = function(data, cid, dugbtn){
@@ -321,13 +310,10 @@
             .force("center_force", d3.forceCenter(width / 2, height / 2))
             .force("links", d3.forceLink(links).id(function (d) { 
                 return d.id; }))            
-            .force("collide", d3.forceCollide().radius(2))
-            ;         
+            .force("collide", d3.forceCollide().radius(2));         
 
         simulation
-            .on("tick", ticked);
-
-        
+            .on("tick", ticked);        
 
         //add encompassing group for the zoom 
         g = svg.append("g")
@@ -410,7 +396,7 @@
             
             if(hasCfgName(cfgs, d.id)){
                 let dugOn = document.getElementById("dugchk");
-                d3.json("json/a(with dug).json")
+                d3.json("demo/long/a.json")
                 .then(function(data){
                     renderCfg(data, d.id, dugOn.checked);
                 });
@@ -501,7 +487,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("json/a(with dug).json")
+        d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -511,11 +497,10 @@
 
     document.getElementById("home").onclick = function() {
         // 초기 CallGraph 렌더링하기
-
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("json/a(with dug).json")
+        d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -551,7 +536,7 @@
             dugOnTxt.style.display = "inline";
             dugOffTxt.style.display = "none";
 
-            d3.json("json/a(with dug).json")
+            d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, true);
@@ -561,7 +546,7 @@
             dugOnTxt.style.display = "none";
             dugOffTxt.style.display = "inline";
 
-            d3.json("json/a(with dug).json")
+            d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, false);
