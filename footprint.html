@@ -15,6 +15,20 @@
         border-color: #ccc; 
         height: 790px;
     }
+    #wrapper{
+        width: 100%;        
+        border-style: solid;
+        border-width: 1px;
+        position: relative;
+        /* border-radius: 10px; */
+        border-color: #ccc; 
+        background-color: #f0f0f0;
+        padding: 20px;
+        padding-top: 30px;
+    }
+    #wrapper .col-3{
+        padding-left: 40px;
+    }
     .arrow0 {
         fill:none;
         stroke:black;
@@ -66,7 +80,7 @@
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <img width="40px" style="float:left; margin-left:10px;" src="asset/image/footprint.png">
-      <a class="navbar-brand col-sm-3 col-md-1 mr-0" style="float:left; padding-left:4px;" href="#">Footprint</a>
+      <a class="navbar-brand col-sm-3 col-md-1 mr-0" style="float:left; padding-left:4px;" href="#">Footprint: Visualized Debugger for Static Analyzer</a>
       <div class="form-control form-control-dark w-100 p-0"></div>
     </nav>
 
@@ -114,8 +128,13 @@
                 </span>
               </li>
               <li class="nav-item">
-                <span class="nav-link">
+                <span class="nav-link" style="margin-bottom:-10px;">
                   <label><input type="checkbox" />&nbsp;&nbsp;Rank</label>
+                </span>
+              </li>
+              <li class="nav-item">
+                <span class="nav-link">
+                  <label><input type="checkbox" />&nbsp;&nbsp;Fold Log</label>
                 </span>
               </li>
             </ul>
@@ -155,6 +174,11 @@
                 </code></pre>
               </div>
               <div id="ltab" class="tabcontent" style="display: none; overflow-y: scroll; height: 750px;">
+                <div id="unfolded" style="display:block;">
+                <div>
+                <div id="folded" style="display:none;">
+                    TODO
+                <div>
               </div>
             </div>
           </div>
@@ -571,6 +595,32 @@
 
         }
     }
+
+
+    // 메모리 로깅 관련 구현부
+    d3.json("memory.json")
+            .then(function(data){
+                for(i in data){
+                    let keys = d3.keys(data[i]);
+                    let vals = d3.values(data[i]);
+                    let div = document.createElement('div');
+                    
+                    div.className = 'row';
+                    div.id = 'wrapper';
+                    div.style.marginLeft = '0px';
+                    div.innerHTML = "";
+
+                    for(j in keys){
+                        keys[j][0] = keys[j][0].toUpperCase();
+                        div.innerHTML +=
+                            '<div class="col-3"><b>'+keys[j].toUpperCase()+'</b><hr></div><div class="col-9">'+vals[j]+'<hr></div>';
+                    }
+                    document.getElementById('unfolded').appendChild(div);
+                }
+
+                
+
+            });
 
     </script>
   </body>
