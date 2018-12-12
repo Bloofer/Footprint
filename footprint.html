@@ -15,7 +15,7 @@
         border-color: #ccc; 
         height: 790px;
     }
-    #wrapper{
+    .wrapper{
         width: 100%;        
         border-style: solid;
         border-width: 1px;
@@ -26,7 +26,14 @@
         padding: 20px;
         padding-top: 30px;
     }
-    #wrapper .col-3{
+    .wrapper:hover {
+        background-color: #b1c0d8;
+    }
+    circle:hover {
+        fill: #b1c0d8;
+        stroke: #d1d1d1;
+    }
+    .wrapper .col-3{
         padding-left: 40px;
     }
     .arrow0 {
@@ -134,7 +141,7 @@
               </li>
               <li class="nav-item">
                 <span class="nav-link">
-                  <label><input type="checkbox" />&nbsp;&nbsp;Fold Log</label>
+                  <label><input id="foldchk" type="checkbox" onclick="toggleFold()" />&nbsp;&nbsp;Fold Log</label>
                 </span>
               </li>
             </ul>
@@ -177,7 +184,7 @@
                 <div id="unfolded" style="display:block;">
                 <div>
                 <div id="folded" style="display:none;">
-                    TODO
+                    <div>TODO</div>
                 <div>
               </div>
             </div>
@@ -279,10 +286,11 @@
       .attr("height", "720px");
 
     let dugOn; // Def-Use 토글 옵션 체크박스
+    let foldOn; // 로그 폴딩 옵션 체크박스
 
     readTextFile("alarm.out");
 
-    d3.json("demo/long/a.json")
+    d3.json("json/a(with dug).json")
         .then(function(data){
             // 초기 데이터 엔트리
             renderCfg(data, "cg", false);
@@ -403,12 +411,15 @@
             .data(nodes)
             .enter()
             .append("circle")
+            .attr("id", function(d) { 
+                return cfgStatus + "-" + d.id;
+            })
             .attr("r", 10)
             .attr("fill", function(d) { 
                 /* if (d.sourceOnly) return d3.color("#0000FF"); */
                 return d3.color("#FFFF2F"); })
             //.attr("id", "1")
-            .style("stroke", function(d) { 
+            .attr("stroke", function(d) { 
                 /* if (d.sourceOnly) return d3.color("#000080"); */
                 return d3.color("#FF8D2F"); 
             });
@@ -437,7 +448,7 @@
             
             if(hasCfgName(cfgs, d.id)){
                 let dugOn = document.getElementById("dugchk");
-                d3.json("demo/long/a.json")
+                d3.json("json/a(with dug).json")
                 .then(function(data){
                     renderCfg(data, d.id, dugOn.checked);
                 });
@@ -528,7 +539,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("demo/long/a.json")
+        d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -541,7 +552,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("demo/long/a.json")
+        d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -549,8 +560,8 @@
 
     };
 
-    // HTML 패널 이벤트 관련 함수들
     function changeTab(evt, tabName) {
+        // HTML 패널 전환 이벤트 함수
         var i, tabcontent, tablinks;
 
         tabcontent = document.getElementsByClassName("tabcontent");
@@ -577,7 +588,7 @@
             dugOnTxt.style.display = "inline";
             dugOffTxt.style.display = "none";
 
-            d3.json("demo/long/a.json")
+            d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, true);
@@ -587,7 +598,7 @@
             dugOnTxt.style.display = "none";
             dugOffTxt.style.display = "inline";
 
-            d3.json("demo/long/a.json")
+            d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, false);
@@ -596,31 +607,42 @@
         }
     }
 
+    function toggleFold() {
+        // 체크박스 확인해서 로그 폴딩 속성 켜고 끔
+        foldOn = document.getElementById("foldchk");
+        let foldOnLog = document.getElementById("folded");
+        let foldOffLog = document.getElementById("unfolded");
+
+        if (foldOn.checked == true){
+            foldOnLog.style.display = "block";
+            foldOffLog.style.display = "none";
+        } else {
+            foldOnLog.style.display = "none";
+            foldOffLog.style.display = "block";
+        }
+    }
 
     // 메모리 로깅 관련 구현부
     d3.json("memory.json")
-            .then(function(data){
-                for(i in data){
-                    let keys = d3.keys(data[i]);
-                    let vals = d3.values(data[i]);
-                    let div = document.createElement('div');
-                    
-                    div.className = 'row';
-                    div.id = 'wrapper';
-                    div.style.marginLeft = '0px';
-                    div.innerHTML = "";
+    .then(function(data){
+        for(i in data){
+            let keys = d3.keys(data[i]);
+            let vals = d3.values(data[i]);
+            let div = document.createElement('div');
+            
+            div.className = 'row wrapper';
+            div.id = vals[0];
+            div.style.marginLeft = '0px';
+            div.innerHTML = "";
 
-                    for(j in keys){
-                        keys[j][0] = keys[j][0].toUpperCase();
-                        div.innerHTML +=
-                            '<div class="col-3"><b>'+keys[j].toUpperCase()+'</b><hr></div><div class="col-9">'+vals[j]+'<hr></div>';
-                    }
-                    document.getElementById('unfolded').appendChild(div);
-                }
-
-                
-
-            });
+            for(j in keys){
+                keys[j][0] = keys[j][0].toUpperCase();
+                div.innerHTML +=
+                    '<div class="col-3"><b>'+keys[j].toUpperCase()+'</b><hr></div><div class="col-9">'+vals[j]+'<hr></div>';
+            }
+            document.getElementById('unfolded').appendChild(div);
+        }
+    });
 
     </script>
   </body>
