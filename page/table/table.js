@@ -565,7 +565,7 @@ function renderTable(node) {
   });
 }
 
-d3.json("table3.json")
+d3.json("table.json")
   .then(d => {
     // preprocess the memories (make v as one string)
     data = d.map(row => ({
