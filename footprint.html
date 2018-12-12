@@ -52,22 +52,14 @@
     <script src="asset/highlight/highlight.pack.js"></script>
 
     <script>
-            $(document).ready(function(){
-                
-                $("#alarm").load("alarm.out");
-                
-                $('#log pre code').each(function(i, block) {
-                  hljs.highlightBlock();
-                })
-
-            });
-
-            </script>
-    <script>
-    /* setTimeout(function() {
-        hljs.initHighlightingOnLoad()
-    }, 1000); */
-    //hljs.initHighlightingOnLoad();
+        // 알람 파일 엔트리
+        /* $(document).ready(function(){
+            $("#alarm").load("alarm.out");
+            
+            $('#log pre code').each(function(i, block) {
+                hljs.highlightBlock();
+            })
+        }); */
     </script>
   </head>
 
@@ -143,8 +135,8 @@
           <div class="row">
             <div class="col-md-6 svgbg" id="cfg">
                 <button id="home" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="home"></span></button>
-                <button id="zoom_in" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="plus"></span></button>
-                <button id="zoom_out" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="minus"></span></button>
+                <!-- <button id="zoom_in" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="plus"></span></button>
+                <button id="zoom_out" style="border-radius:4px; width:40px; height:40px; margin-top:15px;"><span data-feather="minus"></span></button> -->
                 <div id="dugon" style="float:right; border-radius:4px; background-color:#eee; border-color:#ccc; border-style:solid; border-width:1px; width:130px; height:50px; margin-top:15px; padding-left:5px; display:none;">
                     <span data-feather="arrow-right"></span>&nbsp;Control Flow</br>
                     <span data-feather="arrow-right" style="color:red;"></span>&nbsp;<span style="color:red;">Def-Use Chain</span>
@@ -159,7 +151,7 @@
                 <button class="tablinks" onclick="changeTab(event, 'ltab')" style="font-size:large; width:50%; transform:translate(0%,-13%);">Log</button>
               </div>
               <div id="atab" class="tabcontent">
-                <pre><code id="alarm" class="hljs cpp">
+                <pre><code id="alarm" class="hljs">
                 </code></pre>
               </div>
               <div id="ltab" class="tabcontent" style="display: none; overflow-y: scroll; height: 750px;">
@@ -192,6 +184,27 @@
     let height = 500;
     let cfgs = []; // 파싱된 CallGraph의 CFG 이름들
     let cfgStatus; // 현재 CFG Panel에 렌더링하고 있는 그래프 이름. (CallGraph는 cg)
+
+    function readTextFile(file)
+    // 외부 텍스트 파일 읽기 함수
+    {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    var allText = rawFile.responseText;
+                    document.getElementById('alarm').innerText = allText;
+                    //hljs.initHighlighting.called = false;
+                    //hljs.initHighlighting();
+                }
+            }
+        }
+        rawFile.send(null);
+    }
 
     let graph2nodes = function(gr){
     // 그래프 타입 배열을 노드 타입 배열로 변환
@@ -242,6 +255,8 @@
       .attr("height", "720px");
 
     let dugOn; // Def-Use 토글 옵션 체크박스
+
+    readTextFile("alarm.out");
 
     d3.json("demo/long/a.json")
         .then(function(data){
@@ -390,7 +405,9 @@
             .attr("y", ".31em")
             .style("font-family", "sans-serif")
             .style("font-size", "0.7em")
-            .text(function (d) { return d.id + ":" + d.stmt; });
+            .text(function (d) { 
+                if(d.id === "ENTRY" || d.id === "EXIT") return d.id + ":" + d.stmt;
+                else return d.stmt; });
 
         node.on("click", function (d) {
             

@@ -136,3 +136,19 @@ body {
 * {
   font-family: leelawadee-ui-semilight;
 }
+
+#alarm .hljs{
+  font-family: Liberation Mono;
+}
+
+#alarm .hljs-meta{
+  font-family: Liberation Mono;
+}
+
+#alarm .hljs-comment{
+  font-family: Liberation Mono;
+}
+
+#alarm .hljs-number{
+  font-family: Liberation Mono;
+}
