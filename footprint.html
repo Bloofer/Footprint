@@ -208,6 +208,12 @@
       feather.replace()
     </script>
 
+    <script>
+    $( ".row .wrapper" ).click(function() {
+        alert( "Handler for .click() called." );
+    });
+    </script>
+
     <!-- Graphs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     <script>
@@ -559,6 +565,11 @@
             });
 
     };
+
+    let divClick = function() {
+        console.log("1");
+        console.log(this.id);
+    }
 
     function changeTab(evt, tabName) {
         // HTML 패널 전환 이벤트 함수
