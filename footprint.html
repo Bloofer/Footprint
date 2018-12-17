@@ -17,20 +17,21 @@
     }
     .wrapper{
         width: 100%;        
-        border-style: solid;
-        border-width: 1px;
+        /* border-style: solid;
+        border-width: 1px; */
         position: relative;
-        /* border-radius: 10px; */
-        border-color: #ccc; 
+        /* border-radius: 3px; */
+        /* border-color: #ccc; */ 
         background-color: #f0f0f0;
         padding: 20px;
         padding-top: 30px;
+        border-bottom: 1px solid #ccc; 
     }
     .wrapper:hover {
-        background-color: #b1c0d8;
+        background-color: #ccc;
     }
     circle:hover {
-        fill: #b1c0d8;
+        fill: #ccc;
         stroke: #d1d1d1;
     }
     .wrapper .col-3{
@@ -49,6 +50,10 @@
     }
     #arrow1 {
         fill:red;
+    }
+    #menu {
+        padding: 50px;
+        padding-top: 35px;
     }
     </style>
     <meta charset="utf-8">
@@ -180,15 +185,16 @@
                 <pre><code id="alarm" class="hljs">
                 </code></pre>
               </div>
-              <div id="ltab" class="tabcontent" style="overflow-y: scroll; height: 750px;">
+              <div id="ltab" class="tabcontent" style="overflow-y: scroll; height: 750px; border-left: solid 1px #ccc; border-right: solid 1px #ccc; border-bottom: solid 1px #ccc; border-radius: 3px;">
                 <div id="unfolded" class="foldcontent">
                 </div>
                 <div id="folded" class="foldcontent" style="display: none;">
                     <div id="menu">
-                        <select id="nodes" onchange= "changeNode(this.value)"></select>
-                        <p>Input Memory</p>
+                        <p><b>NODE</b></p>
+                        <select class="custom-select" id="nodes" onchange= "changeNode(this.value)" style="margin-bottom: 20px;"></select>
+                        <p><b>INPUT</b></p>
                         <div id="tb_input"></div>
-                        <p>Output Memory</p>
+                        <p style="margin-top: 10px;"><b>OUTPUT</b></p>
                         <div id="tb_output">
                     </div>
                 <div>
@@ -302,7 +308,7 @@
 
     readTextFile("alarm.out");
 
-    d3.json("json/a(with dug).json")
+    d3.json("demo/long/a.json")
         .then(function(data){
             // 초기 데이터 엔트리
             renderCfg(data, "cg", false);
@@ -460,7 +466,7 @@
             
             if(hasCfgName(cfgs, d.id)){
                 let dugOn = document.getElementById("dugchk");
-                d3.json("json/a(with dug).json")
+                d3.json("demo/long/a.json")
                 .then(function(data){
                     renderCfg(data, d.id, dugOn.checked);
                 });
@@ -552,7 +558,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("json/a(with dug).json")
+        d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -565,7 +571,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("json/a(with dug).json")
+        d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -609,7 +615,7 @@
             dugOnTxt.style.display = "inline";
             dugOffTxt.style.display = "none";
 
-            d3.json("json/a(with dug).json")
+            d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, true);
@@ -619,7 +625,7 @@
             dugOnTxt.style.display = "none";
             dugOffTxt.style.display = "inline";
 
-            d3.json("json/a(with dug).json")
+            d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, false);
@@ -656,6 +662,7 @@
     }
 
     // 메모리 로깅 관련 구현부
+    // TODO: 로깅 확장
     d3.json("memory.json")
     .then(function(data){
         for(i in data){
@@ -668,6 +675,8 @@
             div.style.marginLeft = '0px';
             div.innerHTML = "";
 
+            if(i == data.length-1) div.style.borderBottom = "0px";
+
             for(j in keys){
                 keys[j][0] = keys[j][0].toUpperCase();
                 div.innerHTML +=
@@ -677,10 +686,67 @@
         }
     });
 
+    d3.json("table.json")
+    .then(d => {
+        // preprocess the memories (make v as one string)
+        data = d.map(row => ({
+        node: row.node,
+        input: preprocessMem(row.input),
+        output: preprocessMem(row.output)
+        }));
+        // get list of nodes
+        const nodeList = d.map(row => row.node);
+        return nodeList;
+    })
+    .then(nodeList => {
+        // load node into drop-down
+        d3.select("#menu select")
+        .selectAll("option")
+        .data(nodeList)
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(t => t);
+        return nodeList;
+    })
+    .then(node => {
+        for(i in node){
+            renderUnfoldedTable(node[i]);
+        }
+    });
 
+    function renderUnfoldedTable(node) {
+    node = data.find(d => {
+        return d.node === node;
+    });
+    input = node.input;
+    output = node.output;
+    input.forEach(function(d) {
+        if (d.fps) {
+        d._fps = d.fps;
+        d.fps = null;
+        } else {
+        d.fps = d._fps;
+        d._fps = null;
+        }
+    });
+    console.log(input);
+    
+
+    output.forEach(function(d) {
+        if (d.fps) {
+        d._fps = d.fps;
+        d.fps = null;
+        } else {
+        d.fps = d._fps;
+        d._fps = null;
+        }
+        console.log(output);
+    });
+    }
 
     // =======================================
-    // =========== Json 파싱 구현부 ============
+    // ======== Json 메모리 파싱 구현부 ==========
     // =======================================
 
     //modification to https://stackoverflow.com/questions/36273346/d3js-creating-a-collapsible-table-issues-with-nested-data
@@ -710,7 +776,7 @@
     .attr("viewBox", "0 0 " + tableWidth + " " + tableHeight);
 
     function updateOutputTable(source) {
-    console.log("----------");
+    /* console.log("----------"); */
     var x0 = 0,
         y0 = 0,
         barHeight = 20,
@@ -753,7 +819,7 @@
         .duration(duration)
         .style("height", tableHeight + "px");
 
-    console.log(shownChildren);
+    /* console.log(shownChildren); */
     var childRow = outputSvg.selectAll(".children").data(shownChildren);
 
     var childEnter = childRow
@@ -761,13 +827,18 @@
         .append("g", ":first-child")
         .classed("children", true)
         .attr("transform", function(d) {
-        console.log("Child Enter: " + d.v + "," + d.y);
+        /* console.log("Child Enter: " + d.v + "," + d.y); */
         return "translate(" + d.parentX + "," + d.parentY + ")";
         });
 
     var childRect = childEnter
         .append("rect")
-        .attr("height", barHeight)
+        .attr("height", function(d) {
+            //barHeight
+            let tmpTxt = _valueToString(d.v) + ", " + d.exp + ", " + d.pgm_point;
+            let heightNum = parseInt(tmpTxt.length / 50) + 1;
+            return barHeight * heightNum;
+        })
         .attr("width", barWidth)
         .style("fill", color);
 
@@ -775,10 +846,24 @@
         .append("text")
         .attr("dy", 15)
         .attr("dx", 5.5)
-        .style("font-size", "6px")
-        .text(function(d) {
-        console.log("Child Name: " + d.v + "," + d.y);
-        return _valueToString(d.v) + "," + d.exp + "," + d.pgm_point;
+        .style("font-size", "10px")
+        .html(function(d) {
+        /* console.log("Child Name: " + d.v + "," + d.y); */
+
+        let tmpTxt = _valueToString(d.v) + ", " + d.exp + ", " + d.pgm_point;
+        let txts = "";
+
+        console.log(tmpTxt.length);
+
+        for(i = 0; i < parseInt(tmpTxt.length / 50); i++){
+            if (i < parseInt(tmpTxt.length / 50) - 1){
+                txts += "<tspan x=\"0\" dy=\"1.2em\">" + tmpTxt.substring(50 * i, 50 * (i+1) - 1) + "</tspan>";
+            } else {
+                txts += "<tspan x=\"0\" dy=\"1.2em\">" + tmpTxt.substring(50 * i) + "</tspan>";
+            }
+        }
+        return txts;
+        /* if (result.length>10 ) */
         });
 
     // Transition nodes to their new position.
@@ -786,7 +871,7 @@
         .transition()
         .duration(duration)
         .attr("transform", function(d) {
-        console.log("Child Enter Transition: " + d.v + "," + d.y);
+        /* console.log("Child Enter Transition: " + d.v + "," + d.y); */
         return "translate(" + d.x + "," + d.y + ")";
         })
         .style("opacity", 1);
@@ -795,7 +880,7 @@
         .transition()
         .duration(duration)
         .attr("transform", function(d) {
-        console.log("Child Row Transition: " + d.loc + "," + d.y);
+        /* console.log("Child Row Transition: " + d.loc + "," + d.y); */
         return "translate(" + d.x + "," + d.y + ")";
         })
         .style("opacity", 1)
@@ -870,7 +955,7 @@
         .append("text")
         .attr("dy", 15)
         .attr("dx", 5.5)
-        .style("font-size", "8px")
+        .style("font-size", "12px")
         .text(function(d) {
         return d.loc + " -> " + d.v;
         })
@@ -906,12 +991,11 @@
     }
 
     function color(d) {
-        return d._fps ? "#3182bd" : d.fps ? "#c6dbef" : "#fd8d3c";
+        return d._fps ? "#ccc" : d.fps ? "#ccc" : "#ddd";
     }
     }
 
     function updateInputTable(source) {
-    console.log("----------");
     var x0 = 0,
         y0 = 0,
         barHeight = 20,
@@ -954,7 +1038,7 @@
         .duration(duration)
         .style("height", tableHeight + "px");
 
-    console.log(shownChildren);
+    /* console.log(shownChildren); */
     var childRow = inputSvg.selectAll(".children").data(shownChildren);
 
     var childEnter = childRow
@@ -962,7 +1046,7 @@
         .append("g", ":first-child")
         .classed("children", true)
         .attr("transform", function(d) {
-        console.log("Child Enter: " + d.v + "," + d.y);
+        /* console.log("Child Enter: " + d.v + "," + d.y); */
         return "translate(" + d.parentX + "," + d.parentY + ")";
         });
 
@@ -976,9 +1060,9 @@
         .append("text")
         .attr("dy", 15)
         .attr("dx", 5.5)
-        .style("font-size", "6px")
+        .style("font-size", "10px")
         .text(function(d) {
-        console.log("Child Name: " + d.v + "," + d.y);
+        /* console.log("Child Name: " + d.v + "," + d.y); */
         return _valueToString(d.v) + "," + d.exp + "," + d.pgm_point;
         });
 
@@ -987,7 +1071,7 @@
         .transition()
         .duration(duration)
         .attr("transform", function(d) {
-        console.log("Child Enter Transition: " + d.v + "," + d.y);
+        /* console.log("Child Enter Transition: " + d.v + "," + d.y); */
         return "translate(" + d.x + "," + d.y + ")";
         })
         .style("opacity", 1);
@@ -996,7 +1080,7 @@
         .transition()
         .duration(duration)
         .attr("transform", function(d) {
-        console.log("Child Row Transition: " + d.loc + "," + d.y);
+        /* console.log("Child Row Transition: " + d.loc + "," + d.y); */
         return "translate(" + d.x + "," + d.y + ")";
         })
         .style("opacity", 1)
@@ -1071,7 +1155,7 @@
         .append("text")
         .attr("dy", 15)
         .attr("dx", 5.5)
-        .style("font-size", "8px")
+        .style("font-size", "12px")
         .text(function(d) {
         return d.loc + " -> " + d.v;
         })
@@ -1107,7 +1191,7 @@
     }
 
     function color(d) {
-        return d._fps ? "#3182bd" : d.fps ? "#c6dbef" : "#fd8d3c";
+        return d._fps ? "#ccc" : d.fps ? "#ccc" : "#ddd";
     }
     }
 
