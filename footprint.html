@@ -308,7 +308,7 @@
 
     readTextFile("alarm.out");
 
-    d3.json("json/a(with dug).json")
+    d3.json("demo/long/a.json")
         .then(function(data){
             // 초기 데이터 엔트리
             renderCfg(data, "cg", false);
@@ -466,7 +466,7 @@
             
             if(hasCfgName(cfgs, d.id)){
                 let dugOn = document.getElementById("dugchk");
-                d3.json("json/a(with dug).json")
+                d3.json("demo/long/a.json")
                 .then(function(data){
                     renderCfg(data, d.id, dugOn.checked);
                 });
@@ -558,7 +558,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("json/a(with dug).json")
+        d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -571,7 +571,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("json/a(with dug).json")
+        d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -615,7 +615,7 @@
             dugOnTxt.style.display = "inline";
             dugOffTxt.style.display = "none";
 
-            d3.json("json/a(with dug).json")
+            d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, true);
@@ -625,7 +625,7 @@
             dugOnTxt.style.display = "none";
             dugOffTxt.style.display = "inline";
 
-            d3.json("json/a(with dug).json")
+            d3.json("demo/long/a.json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, false);
