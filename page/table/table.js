@@ -604,51 +604,50 @@ function renderTable(node) {
 /*******************************************************************************
 * Preprocess Memory
 *******************************************************************************/
+let valueToString = function(v) {
+  let str_arrayblk = function(arr) {
+    if (arr === "bot") return arr;
+    else {
+      return (
+        "{" +
+        arr.allocsite +
+        " -> (" +
+        arr.arrinfo[0] +
+        "," +
+        arr.arrinfo[1] +
+        "," +
+        arr.arrinfo[2] +
+        "," +
+        arr.arrinfo[3] +
+        ", " +
+        arr.arrinfo[4] +
+        ")}"
+      );
+    }
+  };
+
+  let str_structblk = function(x) {
+    if (x === "bot") return x;
+    else return "{" + x.loc + "->" + x.structinfo + "}";
+  };
+
+  return (
+    "(" +
+    v.itv +
+    "," +
+    v.powloc +
+    "," +
+    str_arrayblk(v.arrblk) +
+    "," +
+    str_structblk(v.structblk) +
+    "," +
+    v.powproc +
+    ")"
+  );
+};
 
 //convert value record to single string
 function preprocessMem(mem) {
-  let valueToString = function(v) {
-    let str_arrayblk = function(arr) {
-      if (arr === "bot") return arr;
-      else {
-        return (
-          "{" +
-          arr.allocsite +
-          " -> (" +
-          arr.arrinfo[0] +
-          "," +
-          arr.arrinfo[1] +
-          "," +
-          arr.arrinfo[2] +
-          "," +
-          arr.arrinfo[3] +
-          ", " +
-          arr.arrinfo[4] +
-          ")}"
-        );
-      }
-    };
-
-    let str_structblk = function(x) {
-      if (x === "bot") return x;
-      else return "{" + x.loc + "->" + x.structinfo + "}";
-    };
-
-    return (
-      "(" +
-      v.itv +
-      "," +
-      v.powloc +
-      "," +
-      str_arrayblk(v.arrblk) +
-      "," +
-      str_structblk(v.structblk) +
-      "," +
-      v.powproc +
-      ")"
-    );
-  };
-
   let bot_fp = [
     {
       v: {
@@ -679,16 +678,11 @@ function preprocessMem(mem) {
   });
 }
 
+
 d3.json("table3.json")
   .then(d => {
     // preprocess the memories (make v as one string)
     data = d.map(row => {
-      console.log("=================Node:"+row.node+"==================");
-      console.log('input');
-      console.log(preprocessMem(row.input))
-      console.log('output');
-      console.log(preprocessMem(row.output));
-      console.log("==============================================");
       return {
         node: row.node,
         input: preprocessMem(row.input),
@@ -710,6 +704,51 @@ d3.json("table3.json")
       .attr("value", d => d)
       .text(t => t);
     return nodeList[0];
+  }).then(node => {
+    data.map(node => {
+    
+  console.log("=================Node:"+node.node+"=======================");
+  console.log("=================Input==================");
+  node.input.map(row => {
+  
+   console.log("value: "+row.loc + " -> " + row.v);
+   console.log("fps:")
+    for (let i in row.fps ){
+     if (row.fps[i].AddrOf) 
+     {console.log(__valueToString(row.fps[i]));}
+     else {
+         console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
+     }
+   }
+  
+ console.log("---------------------------");
+ })
+
+ console.log("=================Output===============");
+ node.output.map(row => {
+ 
+  console.log("value: "+row.loc + " -> " + row.v);
+  console.log("fps:")
+   for (let i in row.fps ){
+    if (row.fps[i].AddrOf) 
+    {console.log(__valueToString(row.fps[i]));}
+    else {
+        console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
+    }
+  }
+ 
+console.log("---------------------------");
+})
+
+
+ console.log("===================================================");
+});
+
+    
+
+
+  
+    return node;
   })
   .then(node => {
     renderTable(node);
