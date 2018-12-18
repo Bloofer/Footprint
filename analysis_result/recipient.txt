@@ -1,0 +1,223 @@
+--------------------------------------------------------------------------------
+Generate Alarm Report begins...
+--------------------------------------------------------------------------------
+
+[............................................................] (0/324)     
+Generate Alarm Report completes: 0.000458000000001
+
+Itv Sparse Analysis completes: 0.017415
+
+= Alarms =
+1. main-bad.c:80 {main} Proven
+  *(a) @main-313:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+2. main-bad.c:82 {main} Proven
+  *(a) @main-320:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+3. main-bad.c:86 {main} Proven
+  *(a) @main-317:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+  *(ret_address) @main-317:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+4. recipient-bad.c:119 {recipient} Proven
+  *(a) @recipient-173:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+  *(a) @recipient-173:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+5. recipient-bad.c:125 {recipient} Proven
+  *(a) @recipient-212:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+6. recipient-bad.c:136 {recipient} Proven
+  *(a) @recipient-176:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+7. recipient-bad.c:141 {recipient} UnProven
+  strcpy ((char */* __restrict  */)buf, (char const   */* __restrict  */)((char const   *)*a.q_user)) @recipient-180:  offset: [3, 3], size: [5, 5] Proven, allocsite: recipient-146
+  strcpy ((char */* __restrict  */)buf, (char const   */* __restrict  */)((char const   *)*a.q_user)) @recipient-180:  offset: [3, 3], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(a) @recipient-180:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+8. recipient-bad.c:143 {recipient} UnProven
+  *(p) @recipient-159:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @recipient-159:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(p) @recipient-158:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @recipient-158:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+9. recipient-bad.c:145 {recipient} UnProven
+  *(p) @recipient-163:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @recipient-163:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(p) @recipient-162:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @recipient-162:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+10. recipient-bad.c:165 {recipient} Proven
+  *(a) @recipient-188:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+  *(a) @recipient-188:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+11. recipient-bad.c:166 {recipient} Proven
+  *(a) @recipient-215:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+12. recipient-bad.c:173 {recipient} Proven
+  strcpy ((char */* __restrict  */)StartOf(test_buf), (char const   */* __restrict  */)__cil_tmp42) @recipient-218:  offset: [4, 4], size: [10, 10] Proven, allocsite: recipient-148
+13. recipient-bad.c:174 {recipient} UnProven
+  *(pw) @recipient-191:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-191:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-191:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+14. recipient-bad.c:175 {recipient} Proven
+  *(a) @recipient-221:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+15. recipient-bad.c:177 {recipient} UnProven
+  *(pw) @recipient-193:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-193:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-193:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+16. recipient-bad.c:177 {recipient} BotAlarm
+  strcpy ((char */* __restrict  */)tmp___1, (char const   */* __restrict  */)((char const   *)*pw.pw_dir)) @recipient-195:  offset: bot, size: [1, +oo] BotAlarm, allocsite: xalloc-17
+  *(pw) @recipient-195:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-195:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-195:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+17. recipient-bad.c:178 {recipient} UnProven
+  *(a) @recipient-196:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+  *(pw) @recipient-196:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-196:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-196:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+18. recipient-bad.c:179 {recipient} UnProven
+  *(a) @recipient-197:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+  *(pw) @recipient-197:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-197:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-197:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+19. recipient-bad.c:180 {recipient} UnProven
+  *(pw) @recipient-198:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-198:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-198:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+20. recipient-bad.c:180 {recipient} UnProven
+  strcpy ((char */* __restrict  */)tmp___4, (char const   */* __restrict  */)((char const   *)*pw.pw_name)) @recipient-200:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(pw) @recipient-200:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-200:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-200:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+21. recipient-bad.c:181 {recipient} Proven
+  *(a) @recipient-201:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+  *(a) @recipient-201:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+22. recipient-bad.c:183 {recipient} UnProven
+  *(pw) @recipient-202:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-202:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-202:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+  *(pw) @recipient-202:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-202:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-202:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+23. recipient-bad.c:186 {recipient} UnProven
+  *(pw) @recipient-204:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-204:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-204:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+  *(pw) @recipient-204:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @recipient-204:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @recipient-204:  offset: [-oo, +oo], size: [-oo, +oo] UnProven, allocsite: __extern__getpwnam
+24. recipient-bad.c:189 {recipient} Proven
+  nbuf[0] @recipient-169:  offset: [0, 0], size: [5, 5] Proven, allocsite: recipient-150
+  nbuf[0] @recipient-168:  offset: [0, 0], size: [5, 5] Proven, allocsite: recipient-150
+25. recipient-bad.c:190 {recipient} UnProven
+  strcpy ((char */* __restrict  */)tmp___6, (char const   */* __restrict  */)((char const   *)StartOf(nbuf))) @recipient-208:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+26. recipient-bad.c:197 {recipient} Proven
+  *(a) @recipient-210:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+  *(a) @recipient-210:  offset: [0, 0], size: [1, 1] Proven, allocsite: main-318
+27. recipient-bad.c:239 {finduser} Proven
+  *(fuzzyp) @finduser-277:  valid pointer dereference Proven
+28. recipient-bad.c:262 {finduser} UnProven
+  *(p) @finduser-254:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-254:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(p) @finduser-253:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-253:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+29. recipient-bad.c:264 {finduser} UnProven
+  *(p) @finduser-256:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-256:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(p) @finduser-255:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-255:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+30. recipient-bad.c:264 {finduser} BotAlarm
+  *(*tmp___0+((int )*p)) @finduser-258:  Array is Bot BotAlarm
+  *(tmp___0) @finduser-258:  offset: [0, 0], size: [1, 1] Proven, allocsite: __extern____ctype_b_loc
+  *(p) @finduser-258:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-258:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(*tmp___0+((int )*p)) @finduser-257:  Array is Bot BotAlarm
+  *(tmp___0) @finduser-257:  offset: [0, 0], size: [1, 1] Proven, allocsite: __extern____ctype_b_loc
+  *(p) @finduser-257:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-257:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+31. recipient-bad.c:266 {finduser} UnProven
+  *(p) @finduser-282:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-282:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+32. recipient-bad.c:266 {finduser} UnProven
+  *(p) @finduser-283:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-283:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+33. recipient-bad.c:275 {finduser} Proven
+  *(fuzzyp) @finduser-287:  valid pointer dereference Proven
+34. recipient-bad.c:287 {finduser} UnProven
+  *(p) @finduser-266:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-266:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(p) @finduser-265:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-265:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+35. recipient-bad.c:289 {finduser} UnProven
+  *(p) @finduser-268:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-268:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(p) @finduser-267:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-267:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+36. recipient-bad.c:289 {finduser} UnProven
+  *(p) @finduser-270:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-270:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+  *(p) @finduser-269:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-269:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+37. recipient-bad.c:290 {finduser} UnProven
+  *(p) @finduser-289:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-289:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+38. recipient-bad.c:290 {finduser} UnProven
+  *(p) @finduser-290:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-146
+  *(p) @finduser-290:  offset: [0, +oo], size: [1, +oo] UnProven, allocsite: xalloc-17
+39. recipient-bad.c:308 {finduser} Proven
+  *(pw) @finduser-294:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @finduser-294:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+  *(pw) @finduser-294:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-293
+  *(pw) @finduser-294:  offset: [0, 0], size: [1, 1] Proven, allocsite: finduser-298
+40. recipient-bad.c:311 {finduser} Proven
+  *(fuzzyp) @finduser-297:  valid pointer dereference Proven
+41. util-bad.c:153 {buildfname} BotAlarm
+  *(gecos) @buildfname-76:  Array is Bot BotAlarm
+  *(gecos) @buildfname-75:  Array is Bot BotAlarm
+42. util-bad.c:158 {buildfname} BotAlarm
+  *(p) @buildfname-78:  Array is Bot BotAlarm
+  *(p) @buildfname-77:  Array is Bot BotAlarm
+43. util-bad.c:158 {buildfname} BotAlarm
+  *(p) @buildfname-80:  Array is Bot BotAlarm
+  *(p) @buildfname-79:  Array is Bot BotAlarm
+44. util-bad.c:158 {buildfname} BotAlarm
+  *(p) @buildfname-82:  Array is Bot BotAlarm
+  *(p) @buildfname-81:  Array is Bot BotAlarm
+45. util-bad.c:158 {buildfname} BotAlarm
+  *(p) @buildfname-84:  Array is Bot BotAlarm
+  *(p) @buildfname-83:  Array is Bot BotAlarm
+46. util-bad.c:160 {buildfname} BotAlarm
+  *(p) @buildfname-86:  Array is Bot BotAlarm
+  *(p) @buildfname-85:  Array is Bot BotAlarm
+47. util-bad.c:167 {buildfname} BotAlarm
+  *(p) @buildfname-88:  Array is Bot BotAlarm
+  *(p) @buildfname-87:  Array is Bot BotAlarm
+48. util-bad.c:167 {buildfname} BotAlarm
+  *(p) @buildfname-90:  Array is Bot BotAlarm
+  *(p) @buildfname-89:  Array is Bot BotAlarm
+49. util-bad.c:167 {buildfname} BotAlarm
+  *(p) @buildfname-92:  Array is Bot BotAlarm
+  *(p) @buildfname-91:  Array is Bot BotAlarm
+50. util-bad.c:167 {buildfname} BotAlarm
+  *(p) @buildfname-94:  Array is Bot BotAlarm
+  *(p) @buildfname-93:  Array is Bot BotAlarm
+51. util-bad.c:169 {buildfname} BotAlarm
+  *(p) @buildfname-96:  Array is Bot BotAlarm
+  *(p) @buildfname-95:  Array is Bot BotAlarm
+52. util-bad.c:176 {buildfname} UnProven
+  strcpy ((char */* __restrict  */)bp, (char const   */* __restrict  */)((char const   *)login)) @buildfname-112:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: finduser-249
+  strcpy ((char */* __restrict  */)bp, (char const   */* __restrict  */)((char const   *)login)) @buildfname-112:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-150
+53. util-bad.c:177 {buildfname} UnProven
+  *(bp) @buildfname-113:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: finduser-249
+  *(bp) @buildfname-113:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-150
+54. util-bad.c:177 {buildfname} UnProven
+  *(bp) @buildfname-114:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: finduser-249
+  *(bp) @buildfname-114:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-150
+55. util-bad.c:178 {buildfname} UnProven
+  *(bp) @buildfname-98:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: finduser-249
+  *(bp) @buildfname-98:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-150
+  *(bp) @buildfname-97:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: finduser-249
+  *(bp) @buildfname-97:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-150
+56. util-bad.c:183 {buildfname} BotAlarm
+  *(tmp___3) @buildfname-118:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: finduser-249
+  *(tmp___3) @buildfname-118:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-150
+  *(p) @buildfname-118:  Array is Bot BotAlarm
+57. util-bad.c:187 {buildfname} UnProven
+  *(bp) @buildfname-121:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: finduser-249
+  *(bp) @buildfname-121:  offset: [0, +oo], size: [5, 5] UnProven, allocsite: recipient-150
+
+#queries                 : 148
+#queries mod alarm point : 57
+#proven                  : 28
+#unproven                : 29
+#bot-involved            : 14
+Finished properly.
+0.0464390000001
