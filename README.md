@@ -18,7 +18,13 @@ Please read the instructions below to use.
 
 ##### 1.2 Alarm / Log visualization
 
-TODO
+* Unfolded
+
+![alt text](/asset/image/demo3.png "Unfolded")  
+
+* Folded
+
+![alt text](/asset/image/demo4.png "Folded")  
 
 #### 2. Footprint Resources
 
