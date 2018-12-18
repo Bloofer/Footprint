@@ -30,10 +30,10 @@
     .wrapper:hover {
         background-color: #ccc;
     }
-    circle:hover {
+    /* circle:hover {
         fill: #ccc;
         stroke: #d1d1d1;
-    }
+    } */
     .wrapper .col-3{
         padding-left: 40px;
     }
@@ -139,11 +139,11 @@
                   <label><input id="dugchk" type="checkbox" onclick="toggleDug()" />&nbsp;&nbsp;Def-Use</label>
                 </span>
               </li>
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <span class="nav-link" style="margin-bottom:-10px;">
                   <label><input type="checkbox" />&nbsp;&nbsp;Rank</label>
                 </span>
-              </li>
+              </li> -->
               <li class="nav-item">
                 <span class="nav-link">
                   <label><input id="foldchk" type="checkbox" onclick="toggleFold(event)" />&nbsp;&nbsp;Fold Log</label>
@@ -473,7 +473,7 @@
                 });
             } else {
                 d3.event.stopImmediatePropagation();
-                self.onNodeClicked.emit(d.id);
+                self.onNodeClicked.emit(d.id); // TODO:
             }
             
         });
@@ -720,32 +720,60 @@
     let div = document.createElement('div');
     
     div.className = 'row wrapper';
-    div.id = vals[0];
+    div.id = node.node;
     div.style.marginLeft = '0px';
+    div.onclick = function() { 
+      let dugOn = document.getElementById("dugchk");
+      let fname = node.node.substring(0, node.node.indexOf('-'));
+      d3.json("demo/long/a.json")
+      .then(function(data){
+          renderCfg(data, fname, dugOn.checked);
+      });
+    };
+    div.onmouseover = function() {
+      // TODO:
+      if(cfgStatus == "cg"){
+        document.getElementById("cg-"+node.node.substring(0, node.node.indexOf('-'))).style.fill = "#0000FF";
+        document.getElementById("cg-"+node.node.substring(0, node.node.indexOf('-'))).style.stroke = "#000080";
+      } else {
+        document.getElementById(node.node).style.fill = "#0000FF";
+        document.getElementById(node.node).style.stroke = "#000080";
+      }
+    };
+    div.onmouseout = function() {
+      // TODO:
+      if(cfgStatus == "cg"){
+        document.getElementById("cg-"+node.node.substring(0, node.node.indexOf('-'))).style.fill = "#FFFF2F";
+        document.getElementById("cg-"+node.node.substring(0, node.node.indexOf('-'))).style.stroke = "#FF8D2F";
+      } else {
+        document.getElementById(node.node).style.fill = "#FFFF2F";
+        document.getElementById(node.node).style.stroke = "#FF8D2F";
+      }
+    };
     div.innerHTML = "";
 
     if(i == data.length-1) div.style.borderBottom = "0px";
 
-  console.log("=================Node:"+node.node+"=======================");
+  //console.log("=================Node:"+node.node+"=======================");
   div.innerHTML +=
             '<div class="col-3"><b>NODE</b><hr></div><div class="col-9">'+node.node+'<hr></div>';
 
-  console.log("=================Input==================");
+  //console.log("=================Input==================");
   let inputTxt = "";
 
   node.input.map(row => {
   
-   console.log("value: "+row.loc + " -> " + row.v);
+   //console.log("value: "+row.loc + " -> " + row.v);
    inputTxt += "value: "+row.loc + " -> " + row.v + "<br>";
-   console.log("fps:")
+   //console.log("fps:")
    inputTxt += "fps: ";
     for (let i in row.fps ){
      if (row.fps[i].AddrOf) 
-     {console.log(__valueToString(row.fps[i]));
+     {//console.log(__valueToString(row.fps[i]));
         inputTxt += __valueToString(row.fps[i]);
     }
      else {
-         console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
+         //console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
          inputTxt += _valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point;
      }
    }
@@ -755,21 +783,21 @@
  div.innerHTML +=
             '<div class="col-3"><b>INPUT</b><hr></div><div class="col-9">'+inputTxt+'<hr></div>';
 
- console.log("=================Output===============");
+ //console.log("=================Output===============");
  let outputTxt = "";
  node.output.map(row => {
  
-  console.log("value: "+row.loc + " -> " + row.v);
+  //console.log("value: "+row.loc + " -> " + row.v);
   outputTxt += "value: "+row.loc + " -> " + row.v + "<br>";
-  console.log("fps:")
+  //console.log("fps:")
   outputTxt += "fps: ";
    for (let i in row.fps ){
     if (row.fps[i].AddrOf) 
-    {console.log(__valueToString(row.fps[i]));
+    {//console.log(__valueToString(row.fps[i]));
         outputTxt += __valueToString(row.fps[i]);
     }
     else {
-        console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
+        //console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
         outputTxt += _valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point;
     }
   }
@@ -1031,7 +1059,7 @@ function updateInputTable(source) {
   }
 
   function color(d) {
-    return d._fps ? "#3182bd" : d.fps ? "#c6dbef" : "#fd8d3c";
+    return d._fps ? "#ccc" : d.fps ? "#eee" : "#FFFF2F";
   }
 }
 
@@ -1238,7 +1266,7 @@ function updateOutputTable(source) {
   }
 
   function color(d) {
-    return d._fps ? "#3182bd" : d.fps ? "#c6dbef" : "#fd8d3c";
+    return d._fps ? "#ccc" : d.fps ? "#eee" : "#FFFF2F";
   }
 }
 
