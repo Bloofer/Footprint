@@ -246,6 +246,7 @@
                 if(rawFile.status === 200 || rawFile.status == 0)
                 {
                     var allText = rawFile.responseText;
+                    allText = allText.replace("@", "<textarea><br></textarea>");
                     document.getElementById('alarm').innerText = allText;
                     //hljs.initHighlighting.called = false;
                     //hljs.initHighlighting();
@@ -663,7 +664,7 @@
 
     // 메모리 로깅 관련 구현부
     // TODO: 로깅 확장
-    d3.json("memory.json")
+    /* d3.json("memory.json")
     .then(function(data){
         for(i in data){
             let keys = d3.keys(data[i]);
@@ -684,67 +685,110 @@
             }
             document.getElementById('unfolded').appendChild(div);
         }
-    });
+    }); */
 
-    d3.json("table.json")
-    .then(d => {
-        // preprocess the memories (make v as one string)
-        data = d.map(row => ({
+    d3.json("table4.json")
+  .then(d => {
+    // preprocess the memories (make v as one string)
+    data = d.map(row => {
+      return {
         node: row.node,
         input: preprocessMem(row.input),
         output: preprocessMem(row.output)
-        }));
-        // get list of nodes
-        const nodeList = d.map(row => row.node);
-        return nodeList;
-    })
-    .then(nodeList => {
-        // load node into drop-down
-        d3.select("#menu select")
-        .selectAll("option")
-        .data(nodeList)
-        .enter()
-        .append("option")
-        .attr("value", d => d)
-        .text(t => t);
-        return nodeList;
-    })
-    .then(node => {
-        for(i in node){
-            renderUnfoldedTable(node[i]);
-        }
+      };
     });
-
-    function renderUnfoldedTable(node) {
-    node = data.find(d => {
-        return d.node === node;
-    });
-    input = node.input;
-    output = node.output;
-    input.forEach(function(d) {
-        if (d.fps) {
-        d._fps = d.fps;
-        d.fps = null;
-        } else {
-        d.fps = d._fps;
-        d._fps = null;
-        }
-    });
-    console.log(input);
+    //console.log("inputMem:")
+    // get list of nodes
+    const nodeList = d.map(row => row.node);
+    return nodeList;
+  })
+  .then(nodeList => {
+    // load node into drop-down
+    d3.select("#menu select")
+      .selectAll("option")
+      .data(nodeList)
+      .enter()
+      .append("option")
+      .attr("value", d => d)
+      .text(t => t);
+    return nodeList[0];
+  }).then(node => {
+    data.map(node => {
     
+    let keys = d3.keys(data[i]);
+    let vals = d3.values(data[i]);
+    let div = document.createElement('div');
+    
+    div.className = 'row wrapper';
+    div.id = vals[0];
+    div.style.marginLeft = '0px';
+    div.innerHTML = "";
 
-    output.forEach(function(d) {
-        if (d.fps) {
-        d._fps = d.fps;
-        d.fps = null;
-        } else {
-        d.fps = d._fps;
-        d._fps = null;
-        }
-        console.log(output);
-    });
+    if(i == data.length-1) div.style.borderBottom = "0px";
+
+  console.log("=================Node:"+node.node+"=======================");
+  div.innerHTML +=
+            '<div class="col-3"><b>NODE</b><hr></div><div class="col-9">'+node.node+'<hr></div>';
+
+  console.log("=================Input==================");
+  let inputTxt = "";
+
+  node.input.map(row => {
+  
+   console.log("value: "+row.loc + " -> " + row.v);
+   inputTxt += "value: "+row.loc + " -> " + row.v + "<br>";
+   console.log("fps:")
+   inputTxt += "fps: ";
+    for (let i in row.fps ){
+     if (row.fps[i].AddrOf) 
+     {console.log(__valueToString(row.fps[i]));
+        inputTxt += __valueToString(row.fps[i]);
     }
+     else {
+         console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
+         inputTxt += _valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point;
+     }
+   }
 
+ //console.log("---------------------------");
+ })
+ div.innerHTML +=
+            '<div class="col-3"><b>INPUT</b><hr></div><div class="col-9">'+inputTxt+'<hr></div>';
+
+ console.log("=================Output===============");
+ let outputTxt = "";
+ node.output.map(row => {
+ 
+  console.log("value: "+row.loc + " -> " + row.v);
+  outputTxt += "value: "+row.loc + " -> " + row.v + "<br>";
+  console.log("fps:")
+  outputTxt += "fps: ";
+   for (let i in row.fps ){
+    if (row.fps[i].AddrOf) 
+    {console.log(__valueToString(row.fps[i]));
+        outputTxt += __valueToString(row.fps[i]);
+    }
+    else {
+        console.log(_valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point);
+        outputTxt += _valueToString(row.fps[i].v) + "," + row.fps[i].exp + "," + row.fps[i].pgm_point;
+    }
+  }
+ 
+//console.log("---------------------------");
+})
+  div.innerHTML +=
+            '<div class="col-3"><b>OUTPUT</b><hr></div><div class="col-9">'+outputTxt+'<hr></div>';
+
+  document.getElementById('unfolded').appendChild(div);
+
+
+ console.log("-----");
+});
+return node;
+  })
+  .then(node => {
+    //renderTable(node);
+  });
     // =======================================
     // ======== Json 메모리 파싱 구현부 ==========
     // =======================================
@@ -752,614 +796,682 @@
     //modification to https://stackoverflow.com/questions/36273346/d3js-creating-a-collapsible-table-issues-with-nested-data
 
     let tableWidth = 400,
-    tableHeight = 1000,
-    barHeight = 40,
-    barWidth = tableWidth * 1,
-    duration = 300;
+  tableHeight = 1000,
+  barHeight = 40,
+  barWidth = tableWidth * 1,
+  duration = 300;
 
-    let outputSvg = d3
-    .select("#tb_output")
-    .append("div")
-    .classed("svg-container", true)
-    .append("svg")
-    .classed("table-svg", true)
-    .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", "0 0 " + tableWidth + " " + tableHeight);
+let outputSvg = d3
+  .select("#tb_output")
+  .append("div")
+  .classed("svg-container", true)
+  .append("svg")
+  .classed("table-svg", true)
+  .attr("preserveAspectRatio", "xMinYMin meet")
+  .attr("viewBox", "0 0 " + tableWidth + " " + tableHeight);
 
-    let inputSvg = d3
-    .select("#tb_input")
-    .append("div")
-    .classed("svg-container", true)
-    .append("svg")
-    .classed("table-svg", true)
-    .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", "0 0 " + tableWidth + " " + tableHeight);
+let inputSvg = d3
+  .select("#tb_input")
+  .append("div")
+  .classed("svg-container", true)
+  .append("svg")
+  .classed("table-svg", true)
+  .attr("preserveAspectRatio", "xMinYMin meet")
+  .attr("viewBox", "0 0 " + tableWidth + " " + tableHeight);
 
-    function updateOutputTable(source) {
-    /* console.log("----------"); */
-    var x0 = 0,
-        y0 = 0,
-        barHeight = 20,
-        padding = 1,
-        shownChildren = [];
+function updateInputTable(source) {
+  console.log("----------");
+  let x0 = 0,
+    y0 = 0,
+    barHeight = 20,
+    padding = 1,
+    shownChildren = [];
 
-    source.forEach(function(d) {
-        d.x = x0;
-        d.y = y0;
-        var parentX = x0,
-        parentY = y0;
-        y0 += barHeight + padding;
-        if (d.fps) {
-        d.fps.forEach(function(data) {
-            data.x = x0;
-            data.y = y0;
-            data.parentX = parentX;
-            data.parentY = parentY;
-            y0 += barHeight + padding;
-            shownChildren.push(data);
-        });
-        } else if (d._fps) {
-        d._fps.forEach(function(data) {
-            data.x = parentX;
-            data.y = parentY;
-            data.parentX = parentX;
-            data.parentY = parentY;
-            shownChildren.push(data);
-        });
-        }
+  source.forEach(function(d) {
+    d.x = x0;
+    d.y = y0;
+    let parentX = x0,
+      parentY = y0;
+    y0 += barHeight + padding;
+    if (d.fps) {
+      d.fps.forEach(function(data) {
+        data.x = x0;
+        data.y = y0;
+        data.parentX = parentX;
+        data.parentY = parentY;
+        // y0 += barHeight + padding;
+        y0 += data.AddrOf
+          ? barHeight + 30 + padding
+          : _valueToString(data.v).length > 120
+          ? barHeight + 10 + padding
+          : barHeight + padding;
+        shownChildren.push(data);
+      });
+    } else if (d._fps) {
+      d._fps.forEach(function(data) {
+        data.x = parentX;
+        data.y = parentY;
+        data.parentX = parentX;
+        data.parentY = parentY;
+        shownChildren.push(data);
+      });
+    }
+  });
+
+  inputSvg
+    .transition()
+    .duration(duration)
+    .attr("viewBox", "0 0 " + tableWidth + " " + y0);
+
+  d3.select(self.frameElement)
+    .transition()
+    .duration(duration)
+    .style("height", tableHeight + "px");
+
+  console.log(shownChildren);
+  let childRow = inputSvg.selectAll(".children").data(shownChildren);
+
+  let childEnter = childRow
+    .enter()
+    .append("g", ":first-child")
+    .classed("children", true)
+    .attr("transform", function(d) {
+      console.log("Child Enter: " + d.v + "," + d.y);
+      return "translate(" + d.parentX + "," + d.parentY + ")";
     });
 
-    outputSvg
-        .transition()
-        .duration(duration)
-        .attr("viewBox", "0 0 " + tableWidth + " " + y0);
+  let childRect = childEnter
+    .append("rect")
+    .attr("height", function(d) {
+      if (d.AddrOf) return barHeight + 30;
+      else if (_valueToString(d.v).length > 120) return barHeight + 10;
+      else return barHeight;
+    })
+    .attr("width", barWidth)
+    .style("fill", color);
 
-    d3.select(self.frameElement)
-        .transition()
-        .duration(duration)
-        .style("height", tableHeight + "px");
-
-    /* console.log(shownChildren); */
-    var childRow = outputSvg.selectAll(".children").data(shownChildren);
-
-    var childEnter = childRow
-        .enter()
-        .append("g", ":first-child")
-        .classed("children", true)
-        .attr("transform", function(d) {
-        /* console.log("Child Enter: " + d.v + "," + d.y); */
-        return "translate(" + d.parentX + "," + d.parentY + ")";
-        });
-
-    var childRect = childEnter
-        .append("rect")
-        .attr("height", function(d) {
-            //barHeight
-            let tmpTxt = _valueToString(d.v) + ", " + d.exp + ", " + d.pgm_point;
-            let heightNum = parseInt(tmpTxt.length / 50) + 1;
-            return barHeight * heightNum;
-        })
-        .attr("width", barWidth)
-        .style("fill", color);
-
-    var childText = childEnter
-        .append("text")
-        .attr("dy", 15)
-        .attr("dx", 5.5)
-        .style("font-size", "10px")
-        .html(function(d) {
-        /* console.log("Child Name: " + d.v + "," + d.y); */
-
-        let tmpTxt = _valueToString(d.v) + ", " + d.exp + ", " + d.pgm_point;
-        let txts = "";
-
-        console.log(tmpTxt.length);
-
-        for(i = 0; i < parseInt(tmpTxt.length / 50); i++){
-            if (i < parseInt(tmpTxt.length / 50) - 1){
-                txts += "<tspan x=\"0\" dy=\"1.2em\">" + tmpTxt.substring(50 * i, 50 * (i+1) - 1) + "</tspan>";
-            } else {
-                txts += "<tspan x=\"0\" dy=\"1.2em\">" + tmpTxt.substring(50 * i) + "</tspan>";
-            }
-        }
-        return txts;
-        /* if (result.length>10 ) */
-        });
-
-    // Transition nodes to their new position.
-    childEnter
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        /* console.log("Child Enter Transition: " + d.v + "," + d.y); */
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1);
-
-    childRow
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        /* console.log("Child Row Transition: " + d.loc + "," + d.y); */
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1)
-        .select("rect")
-        .style("fill", color);
-
-    // Transition exiting nodes to the parent's new position.
-    /*childRow.exit().transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        return "translate(" + d.parentX + "," + d.parentY + ")";
-        })
-        .style("opacity", 1e-6)
-        .remove();*/
-
-    var tableRow = outputSvg.selectAll(".tableRow").data(source);
-
-    var rowEnter = tableRow
-        .enter()
-        .append("g")
-        .classed("tableRow", true)
-        .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-        });
-
-    var rowRect = rowEnter
-        .append("rect")
-        .attr("height", barHeight)
-        .attr("width", barWidth)
-        .style("fill", color)
-        .on("click", click);
-
-    // value to string for v
-    function valueToString(v) {
-        let print_arrayblk = function(v) {
-        if (v.arrblk === "bot") return v.arrblk;
-        else {
-            return (
-            "{" +
-            v.arrblk.allocsite +
-            " -> (" +
-            v.arrblk.arrinfo[0] +
-            "," +
-            v.arrblk.arrinfo[1] +
-            "," +
-            v.arrblk.arrinfo[2] +
-            "," +
-            v.arrblk.arrinfo[3] +
-            ", " +
-            v.arrblk.arrinfo[4] +
-            ")}"
-            );
-        }
-        };
-
-        return (
-        "(" +
-        v.itv +
-        "," +
-        v.powloc +
-        "," +
-        print_arrayblk(v) +
-        "," +
-        v.structblk +
-        "," +
-        v.powproc +
-        ")"
+  let childText = childEnter
+    .append("text")
+    .attr("dy", 15)
+    .attr("dx", 5.5)
+    .style("font-size", "10px")
+    .html(function(d) {
+      if (d.AddrOf) return make_tspan(__valueToString(d));
+      else {
+        return make_tspan(
+          _valueToString(d.v) + "," + d.exp + "," + d.pgm_point
         );
-    }
-
-    var rowText = rowEnter
-        .append("text")
-        .attr("dy", 15)
-        .attr("dx", 5.5)
-        .style("font-size", "12px")
-        .text(function(d) {
-        return d.loc + " -> " + d.v;
-        })
-        .on("click", click);
-
-    rowEnter
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1);
-
-    tableRow
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1)
-        .select("rect")
-        .style("fill", color);
-
-    function click(d) {
-        if (d.fps) {
-        d._fps = d.fps;
-        d.fps = null;
-        } else {
-        d.fps = d._fps;
-        d._fps = null;
-        }
-        updateOutputTable(source);
-    }
-
-    function color(d) {
-        return d._fps ? "#ccc" : d.fps ? "#ccc" : "#ddd";
-    }
-    }
-
-    function updateInputTable(source) {
-    var x0 = 0,
-        y0 = 0,
-        barHeight = 20,
-        padding = 1,
-        shownChildren = [];
-
-    source.forEach(function(d) {
-        d.x = x0;
-        d.y = y0;
-        var parentX = x0,
-        parentY = y0;
-        y0 += barHeight + padding;
-        if (d.fps) {
-        d.fps.forEach(function(data) {
-            data.x = x0;
-            data.y = y0;
-            data.parentX = parentX;
-            data.parentY = parentY;
-            y0 += barHeight + padding;
-            shownChildren.push(data);
-        });
-        } else if (d._fps) {
-        d._fps.forEach(function(data) {
-            data.x = parentX;
-            data.y = parentY;
-            data.parentX = parentX;
-            data.parentY = parentY;
-            shownChildren.push(data);
-        });
-        }
+      }
     });
 
-    inputSvg
-        .transition()
-        .duration(duration)
-        .attr("viewBox", "0 0 " + tableWidth + " " + y0);
+  
 
-    d3.select(self.frameElement)
-        .transition()
-        .duration(duration)
-        .style("height", tableHeight + "px");
+  // Transition nodes to their new position.
+  childEnter
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      console.log("Child Enter Transition: " + d.v + "," + d.y);
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .style("opacity", 1);
 
-    /* console.log(shownChildren); */
-    var childRow = inputSvg.selectAll(".children").data(shownChildren);
+  childRow
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      console.log("Child Row Transition: " + d.loc + "," + d.y);
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .style("opacity", 1)
+    .select("rect")
+    .style("fill", color);
 
-    var childEnter = childRow
-        .enter()
-        .append("g", ":first-child")
-        .classed("children", true)
-        .attr("transform", function(d) {
-        /* console.log("Child Enter: " + d.v + "," + d.y); */
-        return "translate(" + d.parentX + "," + d.parentY + ")";
-        });
+  // Transition exiting nodes to the parent's new position.
+  /*childRow.exit().transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      return "translate(" + d.parentX + "," + d.parentY + ")";
+    })
+    .style("opacity", 1e-6)
+    .remove();*/
 
-    var childRect = childEnter
-        .append("rect")
-        .attr("height", barHeight)
-        .attr("width", barWidth)
-        .style("fill", color);
+  let tableRow = inputSvg.selectAll(".tableRow").data(source);
 
-    var childText = childEnter
-        .append("text")
-        .attr("dy", 15)
-        .attr("dx", 5.5)
-        .style("font-size", "10px")
-        .text(function(d) {
-        /* console.log("Child Name: " + d.v + "," + d.y); */
-        return _valueToString(d.v) + "," + d.exp + "," + d.pgm_point;
-        });
-
-    // Transition nodes to their new position.
-    childEnter
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        /* console.log("Child Enter Transition: " + d.v + "," + d.y); */
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1);
-
-    childRow
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        /* console.log("Child Row Transition: " + d.loc + "," + d.y); */
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1)
-        .select("rect")
-        .style("fill", color);
-
-    // Transition exiting nodes to the parent's new position.
-    /*childRow.exit().transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        return "translate(" + d.parentX + "," + d.parentY + ")";
-        })
-        .style("opacity", 1e-6)
-        .remove();*/
-
-    var tableRow = inputSvg.selectAll(".tableRow").data(source);
-
-    var rowEnter = tableRow
-        .enter()
-        .append("g")
-        .classed("tableRow", true)
-        .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-        });
-
-    var rowRect = rowEnter
-        .append("rect")
-        .attr("height", barHeight)
-        .attr("width", barWidth)
-        .style("fill", color)
-        .on("click", click);
-
-    // value to string for v
-    function valueToString(v) {
-        let print_arrayblk = function(v) {
-        if (v.arrblk === "bot") return v.arrblk;
-        else {
-            return (
-            "{" +
-            v.arrblk.allocsite +
-            " -> (" +
-            v.arrblk.arrinfo[0] +
-            "," +
-            v.arrblk.arrinfo[1] +
-            "," +
-            v.arrblk.arrinfo[2] +
-            "," +
-            v.arrblk.arrinfo[3] +
-            ", " +
-            v.arrblk.arrinfo[4] +
-            ")}"
-            );
-        }
-        };
-
-        return (
-        "(" +
-        v.itv +
-        "," +
-        v.powloc +
-        "," +
-        print_arrayblk(v) +
-        "," +
-        v.structblk +
-        "," +
-        v.powproc +
-        ")"
-        );
-    }
-
-    var rowText = rowEnter
-        .append("text")
-        .attr("dy", 15)
-        .attr("dx", 5.5)
-        .style("font-size", "12px")
-        .text(function(d) {
-        return d.loc + " -> " + d.v;
-        })
-        .on("click", click);
-
-    rowEnter
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1);
-
-    tableRow
-        .transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-        })
-        .style("opacity", 1)
-        .select("rect")
-        .style("fill", color);
-
-    function click(d) {
-        if (d.fps) {
-        d._fps = d.fps;
-        d.fps = null;
-        } else {
-        d.fps = d._fps;
-        d._fps = null;
-        }
-        updateInputTable(source);
-    }
-
-    function color(d) {
-        return d._fps ? "#ccc" : d.fps ? "#ccc" : "#ddd";
-    }
-    }
-
-    //convert value record to single string
-    function preprocessMem(mem) {
-    let valueToString = function(v) {
-        let str_arrayblk = function(arr) {
-        if (arr === "bot") return arr;
-        else {
-            return (
-            "{" +
-            arr.allocsite +
-            " -> (" +
-            arr.arrinfo[0] +
-            "," +
-            arr.arrinfo[1] +
-            "," +
-            arr.arrinfo[2] +
-            "," +
-            arr.arrinfo[3] +
-            ", " +
-            arr.arrinfo[4] +
-            ")}"
-            );
-        }
-        };
-
-        let str_structblk = function(x) {
-        if (x === "bot") return x;
-        else return "{" + x.loc + "->" + x.structinfo + "}";
-        };
-
-        return (
-        "(" +
-        v.itv +
-        "," +
-        v.powloc +
-        "," +
-        str_arrayblk(v.arrblk) +
-        "," +
-        str_structblk(v.structblk) +
-        "," +
-        v.powproc +
-        ")"
-        );
-    };
-
-    let bot_fp = [
-        {
-        v: {
-            itv: "bot",
-            loc: "bot",
-            Arrsite: "bot",
-            arrinfo: ["bot", "bot", "bot", "bot", "bot"],
-            structblk: "bot",
-            powproc: "bot"
-        },
-        exp: "bot",
-        pgm_point: "bot",
-        o: "-1",
-        p: "-1"
-        }
-    ];
-
-    return mem.map(row => {
-        if (row === "bot") {
-        return { loc: "bot", v: "bot", fps: bot_fp };
-        } else {
-        return {
-            loc: row.loc,
-            v: valueToString(row.v),
-            fps: row.fps[0] === "bot" ? bot_fp : row.fps
-        };
-        }
+  let rowEnter = tableRow
+    .enter()
+    .append("g")
+    .classed("tableRow", true)
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
     });
-    }
-    /* common functions for update memory functions */
 
-    //value to string for fps
-    function _valueToString(v) {
-    let str_arr = function(v) {
-        if (v.Arrsite === "bot") return "bot";
-        else {
-        return "{" + v.Arrsite + "-> " + v.arrinfo + "}";
-        }
-    };
+  let rowRect = rowEnter
+    .append("rect")
+    .attr("height", barHeight)
+    .attr("width", barWidth)
+    .style("fill", color)
+    .on("click", click);
 
-    let str_blk = function(v) {
-        if (v.Structsite === "bot") return "bot";
-        else return "{" + v.Structsite + "->" + v.structinfo + "}";
+  // value to string for v
+  function valueToString(v) {
+    let print_arrayblk = function(v) {
+      if (v.arrblk === "bot") return v.arrblk;
+      else {
+        return (
+          "{" +
+          v.arrblk.allocsite +
+          " -> (" +
+          v.arrblk.arrinfo[0] +
+          "," +
+          v.arrblk.arrinfo[1] +
+          "," +
+          v.arrblk.arrinfo[2] +
+          "," +
+          v.arrblk.arrinfo[3] +
+          ", " +
+          v.arrblk.arrinfo[4] +
+          ")}"
+        );
+      }
     };
 
     return (
-        "(" +
-        v.itv +
-        "," +
-        v.loc +
-        "," +
-        str_arr(v) +
-        "," +
-        str_blk(v) +
-        "," +
-        v.powproc +
-        ")"
+      "(" +
+      v.itv +
+      "," +
+      v.powloc +
+      "," +
+      print_arrayblk(v) +
+      "," +
+      v.structblk +
+      "," +
+      v.powproc +
+      ")"
     );
-    }
+  }
 
-    function changeNode(node) {
-    inputSvg.selectAll("*").remove();
-    outputSvg.selectAll("*").remove();
-    renderTable(node);
-    }
-
-    function renderTable(node) {
-    node = data.find(d => {
-        return d.node === node;
-    });
-    input = node.input;
-    output = node.output;
-    input.forEach(function(d) {
-        if (d.fps) {
-        d._fps = d.fps;
-        d.fps = null;
-        } else {
-        d.fps = d._fps;
-        d._fps = null;
-        }
-    });
-    updateInputTable(input);
-
-    output.forEach(function(d) {
-        if (d.fps) {
-        d._fps = d.fps;
-        d.fps = null;
-        } else {
-        d.fps = d._fps;
-        d._fps = null;
-        }
-        updateOutputTable(output);
-    });
-    }
-
-    d3.json("table.json")
-    .then(d => {
-        // preprocess the memories (make v as one string)
-        data = d.map(row => ({
-        node: row.node,
-        input: preprocessMem(row.input),
-        output: preprocessMem(row.output)
-        }));
-        // get list of nodes
-        const nodeList = d.map(row => row.node);
-        return nodeList;
+  let rowText = rowEnter
+    .append("text")
+    .attr("dy", 15)
+    .attr("dx", 5.5)
+    .style("font-size", "8px")
+    .text(function(d) {
+      return d.loc + " -> " + d.v;
     })
-    .then(nodeList => {
-        // load node into drop-down
-        d3.select("#menu select")
-        .selectAll("option")
-        .data(nodeList)
-        .enter()
-        .append("option")
-        .attr("value", d => d)
-        .text(t => t);
-        return nodeList[0];
+    .on("click", click);
+
+  rowEnter
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
     })
-    .then(node => {
-        renderTable(node);
+    .style("opacity", 1);
+
+  tableRow
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .style("opacity", 1)
+    .select("rect")
+    .style("fill", color);
+
+  function click(d) {
+    if (d.fps) {
+      d._fps = d.fps;
+      d.fps = null;
+    } else {
+      d.fps = d._fps;
+      d._fps = null;
+    }
+    updateInputTable(source);
+  }
+
+  function color(d) {
+    return d._fps ? "#3182bd" : d.fps ? "#c6dbef" : "#fd8d3c";
+  }
+}
+
+function updateOutputTable(source) {
+  console.log("----------");
+  let x0 = 0,
+    y0 = 0,
+    barHeight = 20,
+    padding = 1,
+    shownChildren = [];
+
+  source.forEach(function(d) {
+    d.x = x0;
+    d.y = y0;
+    let parentX = x0,
+      parentY = y0;
+    y0 += barHeight + padding;
+    if (d.fps) {
+      d.fps.forEach(function(data) {
+        data.x = x0;
+        data.y = y0;
+        data.parentX = parentX;
+        data.parentY = parentY;
+        // y0 += barHeight + padding;
+        y0 += data.AddrOf
+          ? barHeight + 30 + padding
+          : _valueToString(data.v).length > 120
+          ? barHeight + 10 + padding
+          : barHeight + padding;
+        shownChildren.push(data);
+      });
+    } else if (d._fps) {
+      d._fps.forEach(function(data) {
+        data.x = parentX;
+        data.y = parentY;
+        data.parentX = parentX;
+        data.parentY = parentY;
+        shownChildren.push(data);
+      });
+    }
+  });
+
+  outputSvg
+    .transition()
+    .duration(duration)
+    .attr("viewBox", "0 0 " + tableWidth + " " + y0);
+
+  d3.select(self.frameElement)
+    .transition()
+    .duration(duration)
+    .style("height", tableHeight + "px");
+
+  console.log(shownChildren);
+  let childRow = outputSvg.selectAll(".children").data(shownChildren);
+
+  let childEnter = childRow
+    .enter()
+    .append("g", ":first-child")
+    .classed("children", true)
+    .attr("transform", function(d) {
+      console.log("Child Enter: " + d.v + "," + d.y);
+      return "translate(" + d.parentX + "," + d.parentY + ")";
     });
+
+  let childRect = childEnter
+    .append("rect")
+    .attr("height", function(d) {
+      if (d.AddrOf) return barHeight + 30;
+      else if (_valueToString(d.v).length > 120) return barHeight + 10;
+      else return barHeight;
+    })
+    .attr("width", barWidth)
+    .style("fill", color);
+
+  let childText = childEnter
+    .append("text")
+    .attr("dy", 15)
+    .attr("dx", 5.5)
+    .style("font-size", "10px")
+    .html(function(d) {
+      if (d.AddrOf) return make_tspan(__valueToString(d));
+      else {
+        return make_tspan(
+          _valueToString(d.v) + "," + d.exp + "," + d.pgm_point
+        );
+      }
+    });
+
+  
+
+  // Transition nodes to their new position.
+  childEnter
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      console.log("Child Enter Transition: " + d.v + "," + d.y);
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .style("opacity", 1);
+
+  childRow
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      console.log("Child Row Transition: " + d.loc + "," + d.y);
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .style("opacity", 1)
+    .select("rect")
+    .style("fill", color);
+
+  let tableRow = outputSvg.selectAll(".tableRow").data(source);
+
+  let rowEnter = tableRow
+    .enter()
+    .append("g")
+    .classed("tableRow", true)
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    });
+
+  let rowRect = rowEnter
+    .append("rect")
+    .attr("height", barHeight)
+    .attr("width", barWidth)
+    .style("fill", color)
+    .on("click", click);
+
+  // value to string for v
+  function valueToString(v) {
+    let print_arrayblk = function(v) {
+      if (v.arrblk === "bot") return v.arrblk;
+      else {
+        return (
+          "{" +
+          v.arrblk.allocsite +
+          " -> (" +
+          v.arrblk.arrinfo[0] +
+          "," +
+          v.arrblk.arrinfo[1] +
+          "," +
+          v.arrblk.arrinfo[2] +
+          "," +
+          v.arrblk.arrinfo[3] +
+          ", " +
+          v.arrblk.arrinfo[4] +
+          ")}"
+        );
+      }
+    };
+
+    return (
+      "(" +
+      v.itv +
+      "," +
+      v.powloc +
+      "," +
+      print_arrayblk(v) +
+      "," +
+      v.structblk +
+      "," +
+      v.powproc +
+      ")"
+    );
+  }
+
+  let rowText = rowEnter
+    .append("text")
+    .attr("dy", 15)
+    .attr("dx", 5.5)
+    .style("font-size", "8px")
+    .text(function(d) {
+      return d.loc + " -> " + d.v;
+    })
+    .on("click", click);
+
+  rowEnter
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .style("opacity", 1);
+
+  tableRow
+    .transition()
+    .duration(duration)
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .style("opacity", 1)
+    .select("rect")
+    .style("fill", color);
+
+  function click(d) {
+    if (d.fps) {
+      d._fps = d.fps;
+      d.fps = null;
+    } else {
+      d.fps = d._fps;
+      d._fps = null;
+    }
+    updateOutputTable(source);
+  }
+
+  function color(d) {
+    return d._fps ? "#3182bd" : d.fps ? "#c6dbef" : "#fd8d3c";
+  }
+}
+
+
+/*******************************************************************************
+* Common functions for update memory
+*******************************************************************************/
+
+//value to string for fps
+function _valueToString(v) {
+  let str_arr = function(v) {
+    if (v.Arrsite === "bot") return "bot";
+    else {
+      return "{" + v.Arrsite + "-> " + v.arrinfo + "}";
+    }
+  };
+
+  let str_blk = function(v) {
+    if (v.Structsite === "bot") return "bot";
+    else return "{" + v.Structsite + "->" + v.structinfo + "}";
+  };
+
+  return (
+    "(" +
+    v.itv +
+    "," +
+    v.loc +
+    "," +
+    str_arr(v) +
+    "," +
+    str_blk(v) +
+    "," +
+    v.powproc +
+    ")"
+  );
+}
+
+// for fps with AddrOf 
+function __valueToString(d) {
+  let print = function(d) {
+    if (d.Parent)
+      _valueToString(d.v) +
+        "," +
+        d.exp +
+        "," +
+        d.pgm_point +
+        "\n" +
+        "Parent:" +
+        print(d.Parent[0]);
+    else return _valueToString(d.v) + "," + d.exp + "," + d.pgm_point;
+  };
+  return (
+    _valueToString(d.v) +
+    "," +
+    d.exp +
+    "," +
+    d.pgm_point +
+    "\n" +
+    "ArrdOf:" +
+    _valueToString(d.AddrOf.v) +
+    "," +
+    d.AddrOf.exp +
+    "," +
+    d.AddrOf.pgm_point +
+    "\n" +
+    "Parent:" +
+    print(d.AddrOf.Parent[0])
+  );
+}
+
+function make_tspan(str) {
+  let str_split = str.split("\n");
+  let process_str = function(str) {
+    if (str.length < 120) return "<tspan x=0 dy=1.2em>" + str + "</tspan>";
+    else {
+      let _str = str;
+      let result = "";
+      while (_str.length > 120) {
+        result +=
+          "<tspan x=0 dy=1.2em>" + _str.substring(0, 120) + "</tspan>";
+        _str = _str.substring(120, _str.length);
+      }
+      result += "<tspan x=0 dy=1.2em>" + _str + "</tspan>";
+      // let result =  "<tspan x=0 dy=1.2em>" + str.substring(0, 120) + "</tspan>" +
+      //   "<tspan x=0 dy=1.2em>" + str.substring(120, str.length) + "</tspan>";
+      return result;
+    }
+  };
+
+  let result = "";
+  for (let i in str_split) {
+    result += process_str(str_split[i]);
+  }
+
+  return result;
+}
+
+
+function sortFps(fps) {
+  let compare_by_order = (fp1, fp2) => parseInt(fp2.o) - parseInt(fp1.o);
+  let compare_by_priority = (fp1, fp2) => {
+    let max = (a, b) => (a < b ? b : a);
+    let _calc_priority = fp => {
+      if (!fp.Parent) return parseInt(fp.p);
+      else return max(parseInt(fp.p), _calc_priority(fp.Parent));
+    };
+    let calc_priority = fp => {
+      if (!fp.AddrOf) return parseInt(fp.p);
+      else {
+        if (!fp.AddrOf.Parent) {
+          return max(parseInt(fp.p), parseInt(fp.AddrOf.p));
+        } else {
+          return max(parseInt(fp.p), _calc_priority(fp.AddrOf.Parent));
+        }
+      }
+    };
+    return calc_priority(fp2) - calc_priority(fp1);
+  };
+  return fps.sort(compare_by_order).sort(compare_by_priority);
+}
+
+function changeNode(node) {
+  inputSvg.selectAll("*").remove();
+  outputSvg.selectAll("*").remove();
+  renderTable(node);
+}
+
+function renderTable(node) {
+  node = data.find(d => {
+    return d.node === node;
+  });
+  input = node.input;
+  output = node.output;
+  input.forEach(function(d) {
+    if (d.fps) {
+      d._fps = d.fps;
+      d.fps = null;
+    } else {
+      d.fps = d._fps;
+      d._fps = null;
+    }
+  });
+  updateInputTable(input);
+
+  output.forEach(function(d) {
+    if (d.fps) {
+      d._fps = d.fps;
+      d.fps = null;
+    } else {
+      d.fps = d._fps;
+      d._fps = null;
+    }
+    updateOutputTable(output);
+  });
+}
+
+
+/*******************************************************************************
+* Preprocess Memory
+*******************************************************************************/
+let valueToString = function(v) {
+  let str_arrayblk = function(arr) {
+    if (arr === "bot") return arr;
+    else {
+      return (
+        "{" +
+        arr.allocsite +
+        " -> (" +
+        arr.arrinfo[0] +
+        "," +
+        arr.arrinfo[1] +
+        "," +
+        arr.arrinfo[2] +
+        "," +
+        arr.arrinfo[3] +
+        ", " +
+        arr.arrinfo[4] +
+        ")}"
+      );
+    }
+  };
+
+  let str_structblk = function(x) {
+    if (x === "bot") return x;
+    else return "{" + x.loc + "->" + x.structinfo + "}";
+  };
+
+  return (
+    "(" +
+    v.itv +
+    "," +
+    v.powloc +
+    "," +
+    str_arrayblk(v.arrblk) +
+    "," +
+    str_structblk(v.structblk) +
+    "," +
+    v.powproc +
+    ")"
+  );
+};
+
+//convert value record to single string
+function preprocessMem(mem) {
+  let bot_fp = [
+    {
+      v: {
+        itv: "bot",
+        loc: "bot",
+        Arrsite: "bot",
+        arrinfo: ["bot", "bot", "bot", "bot", "bot"],
+        structblk: "bot",
+        powproc: "bot"
+      },
+      exp: "bot",
+      pgm_point: "bot",
+      o: "-1",
+      p: "-1"
+    }
+  ];
+
+  return mem.map(row => {
+    if (row === "bot") {
+      return { loc: "bot", v: "bot", fps: bot_fp };
+    } else {
+      return {
+        loc: row.loc,
+        v: valueToString(row.v),
+        fps: row.fps[0] === "bot" ? bot_fp : sortFps(row.fps)
+      };
+    }
+  });
+}
 
 
     </script>

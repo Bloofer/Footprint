@@ -1,6 +1,6 @@
 ### Footprint  
 
-Footprint is a visualized debugger for static analyzer such as [Sparrow](https://github.com/ropas/sparrow).
+Footprint is a visualized debugger for static analyzer [Sparrow](https://github.com/ropas/sparrow).
 
 Please read the instructions below to use.
 
