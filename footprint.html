@@ -55,6 +55,20 @@
         padding: 50px;
         padding-top: 35px;
     }
+    #ctab {
+        overflow: hidden;
+        /* position: relative; */
+    }
+    #editor {
+        width: 96.5%;
+        height: 95%;
+        position: absolute;
+        overflow: hidden;
+        /* top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0; */
+    }
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -92,7 +106,7 @@
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <img width="40px" style="float:left; margin-left:10px;" src="asset/image/footprint.png">
-      <a class="navbar-brand col-sm-3 col-md-1 mr-0" style="float:left; padding-left:4px;" href="#">Footprint: Visualized Debugger for Static Analyzer</a>
+      <a class="navbar-brand col-sm-3 col-md-1 mr-0" style="float:left; padding-left:4px;" href="#">Visualized Debugger for Static Analyzer</a>
       <div class="form-control form-control-dark w-100 p-0"></div>
     </nav>
 
@@ -178,8 +192,23 @@
             </div>
             <div class="col-md-6" id="log">
               <div class="tab" style="height:40px;">
-                <button class="tablinks" onclick="changeTab(event, 'atab')" style="font-size:large; width:50%; transform:translate(0%,-13%);">Alarm</button>
-                <button class="tablinks" onclick="changeTab(event, 'ltab')" style="font-size:large; width:50%; transform:translate(0%,-13%);">Log</button>
+                <button class="tablinks" onclick="changeTab(event, 'atab')" style="font-size:large; width:33.3%; transform:translate(0%,-13%);">Alarm</button>
+                <button class="tablinks" onclick="changeTab(event, 'ltab')" style="font-size:large; width:33.3%; transform:translate(0%,-13%);">Log</button>
+                <button class="tablinks" onclick="changeTab(event, 'ctab')" style="font-size:large; width:33.3%; transform:translate(0%,-13%);">Code</button>
+              </div>
+              <div id="ctab" class="tabcontent" style="display: none;">                
+                <div id="editor">
+let rec factorial n =
+if n <= 1 then
+  1
+else
+  factorial (n-1) * n;;
+
+let () =
+  for n = 0 to 16 do
+    Printf.printf "%d! = %d\n" n (factorial n)
+  done;
+                }</div>
               </div>
               <div id="atab" class="tabcontent" style="display: none;">
                 <pre><code id="alarm" class="hljs">
@@ -205,6 +234,17 @@
         </main>
       </div>
     </div>
+
+    <!-- Ace live code editor -->
+    <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/textmate");
+        editor.session.setMode("ace/mode/ocaml");
+        editor.container.style.lineHeight = 2;
+        editor.renderer.updateFontSize();
+        editor.resize();
+    </script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
