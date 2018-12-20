@@ -26,6 +26,10 @@ Please read the instructions below to use.
 
 ![alt text](/asset/image/demo4.png "Folded")  
 
+##### 1.3 Navigate & Edit Analyzer Code
+
+![alt text](/asset/image/CODE.png "Folded")  
+
 #### 2. Footprint Resources
 
 * [D3](https://d3js.org/) - D3 javascript library for data visualization (Force Weighted Graph)
