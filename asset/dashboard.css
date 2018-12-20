@@ -153,6 +153,34 @@ body {
   font-family: Liberation Mono;
 }
 
+#editor .ace_keyword{
+  font-family: Ubuntu Mono;
+}
+
+#editor .ace_identifier{
+  font-family: Ubuntu Mono;
+}
+
+#editor .ace_string{
+  font-family: Ubuntu Mono;
+}
+
+#editor .ace_support{
+  font-family: Ubuntu Mono;
+}
+
+#editor .ace_constant{
+  font-family: Ubuntu Mono;
+}
+
+#editor .ace_numeric{
+  font-family: Ubuntu Mono;
+}
+
+#editor .ace_comment{
+  font-family: Ubuntu Mono;
+}
+
 /* The container must be positioned relative: */
 .custom-select {
   position: relative;

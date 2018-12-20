@@ -198,17 +198,7 @@
               </div>
               <div id="ctab" class="tabcontent" style="display: none;">                
                 <div id="editor">
-let rec factorial n =
-if n <= 1 then
-  1
-else
-  factorial (n-1) * n;;
-
-let () =
-  for n = 0 to 16 do
-    Printf.printf "%d! = %d\n" n (factorial n)
-  done;
-                }</div>
+                </div>
               </div>
               <div id="atab" class="tabcontent" style="display: none;">
                 <pre><code id="alarm" class="hljs">
@@ -238,12 +228,29 @@ let () =
     <!-- Ace live code editor -->
     <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/textmate");
-        editor.session.setMode("ace/mode/ocaml");
-        editor.container.style.lineHeight = 2;
-        editor.renderer.updateFontSize();
-        editor.resize();
+        function toggleAce(){
+          var rawFile = new XMLHttpRequest();
+          var allText;
+          rawFile.open("GET", "sparrow-src/itvSem.ml", false);
+          rawFile.onreadystatechange = function ()
+          {
+              if(rawFile.readyState === 4)
+              {
+                  if(rawFile.status === 200 || rawFile.status == 0)
+                  {
+                      allText = rawFile.responseText;
+                  }
+              }
+          }
+          rawFile.send(null);
+          var editor = ace.edit("editor");
+          editor.setValue(allText); 
+          editor.setTheme("ace/theme/textmate");
+          editor.session.setMode("ace/mode/ocaml");
+          editor.container.style.lineHeight = 2;
+          editor.renderer.updateFontSize();
+          editor.resize();
+        }
     </script>
 
     <!-- Bootstrap core JavaScript
@@ -274,7 +281,7 @@ let () =
     let cfgs = []; // 파싱된 CallGraph의 CFG 이름들
     let cfgStatus; // 현재 CFG Panel에 렌더링하고 있는 그래프 이름. (CallGraph는 cg)
 
-    function readTextFile(file)
+    function readTextFile(file, tid)
     // 외부 텍스트 파일 읽기 함수
     {
         var rawFile = new XMLHttpRequest();
@@ -286,10 +293,8 @@ let () =
                 if(rawFile.status === 200 || rawFile.status == 0)
                 {
                     var allText = rawFile.responseText;
-                    allText = allText.replace("@", "<textarea><br></textarea>");
-                    document.getElementById('alarm').innerText = allText;
-                    //hljs.initHighlighting.called = false;
-                    //hljs.initHighlighting();
+                    allText.replace(/\r/gi, "\r\n");
+                    document.getElementById(tid).innerText = allText;
                 }
             }
         }
@@ -347,7 +352,9 @@ let () =
     let dugOn; // Def-Use 토글 옵션 체크박스
     let foldOn; // 로그 폴딩 옵션 체크박스
 
-    readTextFile("analysis_result/recipient.txt");
+    readTextFile("analysis_result/recipient.txt", "alarm");
+    
+    toggleAce();
 
     d3.json("demo/long/a.json")
         .then(function(data){
