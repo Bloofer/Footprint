@@ -69,6 +69,20 @@
         left: 0;
         right: 0; */
     }
+    #save {
+      position: absolute;
+      bottom: 10px;
+      right: 130px;
+      border-radius:4px; 
+      width:80px;
+    }
+    #cancel {
+      position: absolute;
+      bottom: 10px;
+      right: 40px;
+      border-radius:4px; 
+      width:80px;
+    }
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -199,6 +213,8 @@
               <div id="ctab" class="tabcontent" style="display: none;">                
                 <div id="editor">
                 </div>
+                <button id="save">Save</button>
+                <button id="cancel" onclick="toggleAce(codeStatus)">Cancel</button>
               </div>
               <div id="atab" class="tabcontent" style="display: none;">
                 <pre><code id="alarm" class="hljs">
@@ -228,10 +244,10 @@
     <!-- Ace live code editor -->
     <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        function toggleAce(){
+        function toggleAce(filePath){
           var rawFile = new XMLHttpRequest();
           var allText;
-          rawFile.open("GET", "sparrow-src/itvSem.ml", false);
+          rawFile.open("GET", filePath, false);
           rawFile.onreadystatechange = function ()
           {
               if(rawFile.readyState === 4)
@@ -280,6 +296,7 @@
     let height = 500;
     let cfgs = []; // 파싱된 CallGraph의 CFG 이름들
     let cfgStatus; // 현재 CFG Panel에 렌더링하고 있는 그래프 이름. (CallGraph는 cg)
+    let codeStatus = "sparrow-src/itvSem.ml"; // 현재 Code Panel에 렌더링 된 프로그램 이름.
 
     function readTextFile(file, tid)
     // 외부 텍스트 파일 읽기 함수
@@ -352,11 +369,11 @@
     let dugOn; // Def-Use 토글 옵션 체크박스
     let foldOn; // 로그 폴딩 옵션 체크박스
 
-    readTextFile("analysis_result/recipient.txt", "alarm");
+    readTextFile("alarm.out", "alarm");
     
-    toggleAce();
+    toggleAce(codeStatus);
 
-    d3.json("demo/long/a.json")
+    d3.json("json/a(with dug).json")
         .then(function(data){
             // 초기 데이터 엔트리
             renderCfg(data, "cg", false);
@@ -514,13 +531,13 @@
             
             if(hasCfgName(cfgs, d.id)){
                 let dugOn = document.getElementById("dugchk");
-                d3.json("demo/long/a.json")
+                d3.json("json/a(with dug).json")
                 .then(function(data){
                     renderCfg(data, d.id, dugOn.checked);
                 });
             } else {
                 d3.event.stopImmediatePropagation();
-                console.log("node click "+cfgStatus + "-" + d.id);
+                //console.log("node click "+cfgStatus + "-" + d.id);
                 changeNode(cfgStatus + "-" + d.id);
                 
                 var val = cfgStatus + "-" + d.id;
@@ -529,7 +546,7 @@
                 for (var opt, j = 0; opt = opts[j]; j++) {
                   if (opt.value == val) {
                     sel.selectedIndex = j;
-                    console.log(opt.value);
+                    //console.log(opt.value);
                     break;
                   }
                 }
@@ -620,7 +637,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("demo/long/a.json")
+        d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -633,7 +650,7 @@
         cfgStatus = "cg";        
         dugOn = document.getElementById("dugchk");
 
-        d3.json("demo/long/a.json")
+        d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, "cg", dugOn.checked);
@@ -677,7 +694,7 @@
             dugOnTxt.style.display = "inline";
             dugOffTxt.style.display = "none";
 
-            d3.json("demo/long/a.json")
+            d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, true);
@@ -687,7 +704,7 @@
             dugOnTxt.style.display = "none";
             dugOffTxt.style.display = "inline";
 
-            d3.json("demo/long/a.json")
+            d3.json("json/a(with dug).json")
             .then(function(data){
                 d3.selectAll("g").remove().exit().data(data);
                 renderCfg(data, cfgStatus, false);
@@ -723,6 +740,16 @@
         evt.currentTarget.className += " active";
     }
 
+    function getSaFilePath(log) {
+      let idx = -1;
+      let saArr = ["apiSem.ml", "itvSem.ml", "octImpactSem.ml", "octSem.ml", "taintSem.ml"];
+      for(i in saArr){
+        idx = log.indexOf(saArr[i]);
+        if(idx != -1) return "sparrow-src/" + saArr[i];
+      }
+      return "NAN";
+    }
+
     // 메모리 로깅 관련 구현부
     // TODO: 로깅 확장
     /* d3.json("memory.json")
@@ -748,7 +775,7 @@
         }
     }); */
 
-    d3.json("table4.json")
+    d3.json("table.json")
   .then(d => {
     // preprocess the memories (make v as one string)
     data = d.map(row => {
@@ -786,7 +813,7 @@
     div.onclick = function() { 
       let dugOn = document.getElementById("dugchk");
       let fname = node.node.substring(0, node.node.indexOf('-'));
-      d3.json("demo/long/a.json")
+      d3.json("json/a(with dug).json")
       .then(function(data){
           renderCfg(data, fname, dugOn.checked);
       });
@@ -970,13 +997,21 @@ function updateInputTable(source) {
     });
 
   let childRect = childEnter
-    .append("rect")
+    .append("rect") // TODO:
     .attr("height", function(d) {
       if (d.AddrOf) return barHeight + 30;
       else if (_valueToString(d.v).length > 120) return barHeight + 10;
       else return barHeight;
     })
     .attr("width", barWidth)
+    .on("click", function(d) {
+      if (getSaFilePath(d.pgm_point) != "NAN"){
+        changeTab(window.event, 'ctab');
+        codeStatus = getSaFilePath(d.pgm_point);
+        return toggleAce(codeStatus);
+      }
+      return "";
+    })
     .style("fill", color);
 
   let childText = childEnter
@@ -1000,7 +1035,7 @@ function updateInputTable(source) {
     .transition()
     .duration(duration)
     .attr("transform", function(d) {
-      console.log("Child Enter Transition: " + d.v + "," + d.y);
+      //console.log("Child Enter Transition: " + d.v + "," + d.y);
       return "translate(" + d.x + "," + d.y + ")";
     })
     .style("opacity", 1);
@@ -1009,7 +1044,7 @@ function updateInputTable(source) {
     .transition()
     .duration(duration)
     .attr("transform", function(d) {
-      console.log("Child Row Transition: " + d.loc + "," + d.y);
+      //console.log("Child Row Transition: " + d.loc + "," + d.y);
       return "translate(" + d.x + "," + d.y + ")";
     })
     .style("opacity", 1)
@@ -1186,13 +1221,21 @@ function updateOutputTable(source) {
     });
 
   let childRect = childEnter
-    .append("rect")
+    .append("rect") //TODO:
     .attr("height", function(d) {
       if (d.AddrOf) return barHeight + 30;
       else if (_valueToString(d.v).length > 120) return barHeight + 10;
       else return barHeight;
     })
     .attr("width", barWidth)
+    .on("click", function(d) {
+      if (getSaFilePath(d.pgm_point) != "NAN"){
+        changeTab(window.event, 'ctab');
+        codeStatus = getSaFilePath(d.pgm_point);
+        return toggleAce(codeStatus);
+      }
+      return "";
+    })
     .style("fill", color);
 
   let childText = childEnter
