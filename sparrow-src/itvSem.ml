@@ -300,8 +300,7 @@ and eval ?(spec=Spec.empty) : Proc.t -> Cil.exp -> Mem.t -> Cil.location -> stri
       let powloc, lv_fp, fp_opt = eval_lv_with_footprint ~spec pid l mem loc ~n_info in
       Val.modify_footprints'''' [%here] lv_fp fp_opt loc s_exp n_info powloc (Val.of_pow_loc powloc)
     | Cil.AddrOfLabel _ ->
-      invalid_arg "itvSem.ml:eval AddrOfLabel mem. \
-                   Analysis does not support label values."
+      invalid_arg "itvSem.ml:eval AddrOfLabel mem."
     | Cil.StartOf l ->
       let powloc, lv_fp, fp_opt = eval_lv_with_footprint ~spec pid l mem loc ~n_info in
       Val.modify_footprints'''' [%here] lv_fp fp_opt loc s_exp n_info powloc (lookup powloc mem)
@@ -312,6 +311,7 @@ let eval_lv ?(spec=Spec.empty) pid lv mem loc ~n_info =
 
 let eval_list : Spec.t -> Proc.t -> Cil.exp list -> Mem.t -> Cil.location -> n_info:string -> Val.t list
 = fun spec pid exps mem loc ~n_info -> List.map (fun e -> eval ~spec pid e mem loc n_info) exps
+
 
 let eval_array_alloc ?(spec=Spec.empty) : Node.t -> Cil.exp -> bool -> Mem.t -> Cil.location -> n_info:string -> Val.t
   = fun node e is_static mem loc ~n_info ->
