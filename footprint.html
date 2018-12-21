@@ -105,6 +105,9 @@
     <link rel="stylesheet" href="asset/highlight/styles/androidstudio.css">
     <script src="asset/highlight/highlight.pack.js"></script>
 
+    <!-- Javascript File Write Library -->
+    <script src="asset/FileSaver.js"></script>
+
     <script>
         // 알람 파일 엔트리
         /* $(document).ready(function(){
@@ -245,8 +248,8 @@
     <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
         function toggleAce(filePath){
-          var rawFile = new XMLHttpRequest();
-          var allText;
+          let rawFile = new XMLHttpRequest();
+          let allText;
           rawFile.open("GET", filePath, false);
           rawFile.onreadystatechange = function ()
           {
@@ -259,7 +262,7 @@
               }
           }
           rawFile.send(null);
-          var editor = ace.edit("editor");
+          let editor = ace.edit("editor");
           editor.setValue(allText); 
           editor.setTheme("ace/theme/textmate");
           editor.session.setMode("ace/mode/ocaml");
@@ -301,7 +304,7 @@
     function readTextFile(file, tid)
     // 외부 텍스트 파일 읽기 함수
     {
-        var rawFile = new XMLHttpRequest();
+        let rawFile = new XMLHttpRequest();
         rawFile.open("GET", file, false);
         rawFile.onreadystatechange = function ()
         {
@@ -309,7 +312,7 @@
             {
                 if(rawFile.status === 200 || rawFile.status == 0)
                 {
-                    var allText = rawFile.responseText;
+                    let allText = rawFile.responseText;
                     allText.replace(/\r/gi, "\r\n");
                     document.getElementById(tid).innerText = allText;
                 }
@@ -317,6 +320,21 @@
         }
         rawFile.send(null);
     }
+
+    // 수정된 코드 저장
+    $("#save").click( function() {
+      let editor = ace.edit("editor");
+      let text = editor.session.doc.getAllLines()
+
+      let fullText = "";
+      for(i in text){
+        fullText += text[i] + '\r\n';
+        
+      }
+      let blob = new Blob([fullText], {type: "text/plain;charset=utf-8"});      
+      let fileName = codeStatus.substring(codeStatus.indexOf('/')+1);
+      saveAs(blob, fileName);
+    });
 
     let graph2nodes = function(gr){
     // 그래프 타입 배열을 노드 타입 배열로 변환
@@ -540,10 +558,10 @@
                 //console.log("node click "+cfgStatus + "-" + d.id);
                 changeNode(cfgStatus + "-" + d.id);
                 
-                var val = cfgStatus + "-" + d.id;
-                var sel = document.getElementById('nodes');
-                var opts = sel.options;
-                for (var opt, j = 0; opt = opts[j]; j++) {
+                let val = cfgStatus + "-" + d.id;
+                let sel = document.getElementById('nodes');
+                let opts = sel.options;
+                for (let opt, j = 0; opt = opts[j]; j++) {
                   if (opt.value == val) {
                     sel.selectedIndex = j;
                     //console.log(opt.value);
@@ -607,7 +625,7 @@
                 .attr("y2", function(d) { return d.target.y; }); */
 
             link.attr("d", function(d) {
-                var dx = d.target.x - d.source.x,
+                let dx = d.target.x - d.source.x,
                     dy = d.target.y - d.source.y,
                     dr;  //linknum is defined above
                     if(d.text === "") dr = 0;
@@ -668,7 +686,7 @@
 
     function changeTab(evt, tabName) {
         // HTML 패널 전환 이벤트 함수
-        var i, tabcontent, tablinks;
+        let i, tabcontent, tablinks;
 
         tabcontent = document.getElementsByClassName("tabcontent");
         for (i = 0; i < tabcontent.length; i++) {
