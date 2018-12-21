@@ -32,11 +32,15 @@ Please read the instructions below to use.
 
 #### 2. Footprint Resources
 
-* [D3](https://d3js.org/) - D3 javascript library for data visualization (Force Weighted Graph)
+* [D3](https://d3js.org/) - D3 javascript library for data visualization
+
+* [D3 Force-Weighted Graph](https://github.com/d3/d3-force) - D3 force weighted graph to express program cfg & def-use chain
 
 * [Sparrow](https://github.com/ropas/sparrow) - Sparrow alarms for debugger input
 
 * [Bootstrap](https://getbootstrap.com/) - Bootstrap Front-end framework
+
+* [Ace](https://ace.c9.io/) - Ace Code Editor for Analyzer Code Edit
 
 * Fps(footprint) 
 
@@ -51,13 +55,13 @@ Please read the instructions below to use.
 Uses below resources to visualize the analysis result & debug.
 
 ```
-* Short example of prog.c ( 50 LOC ) *
-demo/short/a.json - Control flow graph including callgraph & def-use chain
-demo/short/mem.json - Analysis result & memory stack trace including Fps
+* Short example of exec.c ( 50 LOC ) *
+demo/short/cfg.json - Control flow graph including callgraph & def-use chain
+demo/short/log.json - Analysis result & memory stack trace including Fps
 demo/short/alarm.txt - Sparrow alarm result
 
 * Long example of gzip.c ( 1000 LOC ) *
-demo/long/a.json - Control flow graph including callgraph & def-use chain
-demo/long/mem.json - Analysis result & memory stack trace including Fps
+demo/long/cfg.json - Control flow graph including callgraph & def-use chain
+demo/long/log.json - Analysis result & memory stack trace including Fps
 demo/long/alarm.txt - Sparrow alarm result
 ```
